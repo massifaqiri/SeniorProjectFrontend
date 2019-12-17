@@ -1,0 +1,12 @@
+div {
+    white-space: pre-wrap;
+} 
+
+.categoryImg {
+    width: 100px;
+    height: 100px;
+}
+
+.row {
+    margin-bottom: 20px;
+}

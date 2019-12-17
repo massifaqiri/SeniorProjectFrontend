@@ -1,0 +1,46 @@
+/* p {
+    text-align: left;
+} */
+
+.heading1 {
+    color: #FF533D;
+    text-align: right;
+}
+
+.heading3 {
+    color: #373737;
+    text-align: right;
+}
+
+.bell2 {
+    border-radius: 50%;
+    height: 10%;
+    /* weight: 100px; */
+    float: left;
+}
+
+.notifyCard {
+    text-align: left;
+    height: 100%;
+}
+
+.notifyBorder {
+    border-radius: 10px;
+    border: 1px solid #373737;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    height: 25%;
+    width: 100%;
+}
+
+.notifyCol {
+    padding: 10px;
+    width: 100%;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+}

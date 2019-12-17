@@ -1,0 +1,10 @@
+Button {
+    margin: 1%;
+}
+
+.profilePicture {
+    float: left;
+    border-radius: 5%;
+    margin: 0.5%;
+    width: 20%;
+}

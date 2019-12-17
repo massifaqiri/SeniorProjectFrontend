@@ -1,0 +1,55 @@
+Button {
+    background-color: #FF533D;
+}
+
+.mdbpopover {
+    width: 50vh;
+}
+
+/* .mdbpopoverDiv {
+    display: flex;
+    width: 500%;
+} */
+
+figcaption {
+    white-space: nowrap;
+    width: 20vh;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+figcaption:hover {
+    overflow: visible;
+}
+
+.floatLeft {
+    float: left;
+}
+
+.infoCard {
+    margin-bottom: 1%;
+    height: 87%;
+}
+
+.listingBtn {
+    width: 25vw;
+    height: 40vh;
+    /* background-color: gray; */
+}
+
+.listingBtn:hover {
+    background-color: lightgrey;
+}
+
+.listingImg {
+    height: 25vh;
+}
+
+.sectionTitle {
+    color: #FF533D;
+}
+
+.sectionDesc {
+    font-style: italic;
+    font-size: x-large;
+}

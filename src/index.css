@@ -1,0 +1,25 @@
+/*
+  Color Palette
+  Paper: #F4F4F4 (Light Background)
+  Current Blue (Grab RGB/Hex) and Variations
+  Charcoal: #373737
+  Accent: Coral #FF533D
+ */
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f4f4;
+  font-family: 'Montserrat', sans-serif;
+  width: 98%;
+  height: 98%;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
