@@ -1,5 +1,5 @@
 {
     "domain": "dev-vh22wlc3.auth0.com",
     "clientId": "MJrlidYk1VdXS5ynPDuAnuuVJaPlTt2H",
-    "redirect_uri": "http://localhost:9000"
+    "redirect_uri": "https://www.campus-share.com/"
 }

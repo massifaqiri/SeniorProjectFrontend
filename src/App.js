@@ -17,9 +17,15 @@ import { useAuth0 } from "./react-auth0-spa.js";
 import Profile from "./components/Profile";
 import Sender from "./components/Sender";
 
-
 // Bootstrap Imports
 import { Navbar, Spinner } from 'react-bootstrap';
+
+// Amplify imports
+import { withAuthenticator } from 'aws-amplify-react';
+import Amplify, { Auth } from 'aws-amplify';
+
+
+
 // const image = require('img/favoritebook.jpg');
 
 // App: main body of the page. Includes form, test, image
