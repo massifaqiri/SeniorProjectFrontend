@@ -1,1 +1,0 @@
-// Test custom hook, react-auth0-spa.js
