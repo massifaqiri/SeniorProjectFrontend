@@ -7,42 +7,65 @@ import { useAuth0 } from "../react-auth0-spa";
 
 import "./Profile.css";
 
-const Profile = () => {
-  // const [showModal, setShow] = useState(false);
+const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 
-  // function handleShow() {
-  //   setShow(true);
-  // };
+const Profile = (props) => {
 
   const { loading, user, logout } = useAuth0();
+  
+  const [showModal, setShow] = useState(false);
 
-  // User info loading
-  if (loading) {
-    return (
-      <div>Loading...</div>
-    );
+  function handleShow() {
+    fetchUserData(user.email);
+    setShow(true);
+  };
+
+  function handleClose() {
+    setShow(false);
+  };
+
+  const saveChanges = async() => {
+    // to determine if an update to the database is necessary:
+    // check values of current selections against userdata variable
+    handleClose();
   }
 
-  // No user: should not be able to see the profile page
-  if (!user) {
-      return(
-        <p>Please log in to see the profile page</p>
-      );
-  }  
+  // Retrieve current user data from DB and store in userdata
+  let userdata;
+  async function fetchUserData(user_email) {
+    await fetch(`${backendURL}/userdata`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+          email: user_email
+      })
+    })
+    .then(response => response.json())
+    .then(data => userdata = data);
+  } 
 
-  // Regular user logged in: display info
-  return (
-    <div>
-      <img className="profilePicture" src={user.picture} alt="User Profile" />
-      <h2>{user.name}</h2>
-      <p>{user.email}</p>
-      {/* <UserDetails_Modal closePhrase="Cancel" show={showModal} title="Edit your details!" user={user}/> */}
-      {/* <Button onClick={handleShow()}>Edit Details</Button> */}
-      <Button onClick={() => logout()}>Log out</Button>
-
-      {/* User Details Modal */}
-    </div>
-  );
+  let majors = ["Accounting", "Africana Studies", "Allied Health Sciences", "Anthropology", "Art", 
+                  "Biblical Languages", "Biology",
+                  "Chemistry", "Classics", "Communication Studies", "Computer Science",
+                  "Data Science",
+                  "Economics", "Elementary Education", "English", "Environmental Studies", "Exercise Science", 
+                  "French",
+                  "German",
+                  "Health Promotion",
+                  "History",
+                  "International Studies",
+                  "Management", "Mathematics", "Mathematics/Statistics", "Music"," Music education",
+                  "Neuroscience", "Nordic Studies", "Nursing", 
+                  "Philosophy", "Physics", "Political science", "Psychology",
+                  "Religion",
+                  "Social work", "Sociology", "Spanish",
+                  "Theatre",
+                  "Visual Communication",
+                  "Women and Gender Studies"]
+  let majors_options = [];
+  for (var i = 0; i < majors.length; i++) {
+      majors_options.push(<option key={majors[i]}>{majors[i]}</option>)
+  }
 };
 
 export default Profile;

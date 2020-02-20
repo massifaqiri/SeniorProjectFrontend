@@ -6,7 +6,7 @@ import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } fr
 import './Listing.css';
 
 const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
-const googleAPI = "https://www.googleapis.com/books/v1/volumes?q=";
+const googleAPI = "https://www.googleapis.com/books/v1/volumes";
 
 // Add objects parameter; list of lists (info for InfoCards)
 class Listing extends React.Component {
@@ -40,12 +40,14 @@ class Listing extends React.Component {
     // fetchVolumeInfo: on selection of author, populate ISBN & Photo about that volume
     fetchVolumeInfo = async() => {
         let title = this.refs.textbook_title;
-        if (typeof title !== "undefined") {
+        if (title !== "undefined" && title.value !== "") {
             title = title.value;
             // Get & Display the Volume's ISBN # and Picture
-            await fetch(`${googleAPI}${title}&key=${this.state.API_KEY}`)
+            await fetch(`${googleAPI}?q=${title}&key=${this.state.API_KEY}`)
             .then(response => response.json())
             .then(data => this.setState({ bookOptions: data.items }));
+        } else {
+            alert("Please enter a title before searching Google Books.")
         }
     };
 
@@ -62,30 +64,29 @@ class Listing extends React.Component {
     // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async (event) => {
         let title = this.refs.textbook_title;
-        let gbID = this.refs.GoogleBookID;
-
-        // get info on title from Google Books
-        let gbTitle = await fetch(`${googleAPI}${gbID.value}&key=${this.state.API_KEY}`)
-                          .then(response => response.json());
-        console.log(gbTitle);
-
-        let gbVolInfo = gbTitle.volumeInfo;
-        let gbBookTitle = gbVolInfo.title;
-        let gbBookAuthor = gbVolInfo.authors[0]; // There may be multiple authors!
-        let gbBookISBNs = gbVolInfo.industryIentifiers;
-        let gbBookISBN;
-        if (gbBookISBNs[0].type === "ISBN_13") {
-            gbBookISBN = gbBookISBN[0].identifier;
-        } else {
-            gbBookISBN = gbBookISBN[1].identifier;
-        }
-        let gbBookImage = gbVolInfo.imageLinks.thumbnail;
-
-        event.preventDefault();
-
         // Check that the ref exists and title is not blank
-        if (title !== '' && title.value !== '') {
-            event.preventDefault();
+        if (title !== "undefined" && title.value !== '') {
+            let gbID = this.refs.GoogleBookID;
+            // get info on title from Google Books
+            console.log(`${googleAPI}/${gbID.value}?key=${this.state.API_KEY}`);
+            let gbTitle;
+            await fetch(`${googleAPI}/${gbID.value}?key=${this.state.API_KEY}`)
+                            .then(response => response.json()
+                            .then(data => gbTitle = data));
+            let gbVolInfo = gbTitle.volumeInfo;
+            console.log(gbVolInfo);
+            let gbBookTitle = gbVolInfo.title;
+            let gbBookAuthor = gbVolInfo.authors[0]; // There may be multiple authors!
+            // let gbBookISBNs = gbVolInfo.industryIentifiers;
+            let gbBookISBN = "XXX-X-XXX-XXXXX-X";
+            // for (let isbnNum in gbBookISBNs) {
+            //     if (isbnNum.identifier.type === "ISBN_13") {
+            //         gbBookISBN = isbnNum.identifier.splice(3, 0, "-")
+            //     }
+            // }
+
+            let gbBookImage = gbVolInfo.imageLinks.smallThumbnail;
+            console.log(`"${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${this.state.user.email}", "${gbBookImage}"`);
 
             // TODO: auto-populate author & ISBN, and grab photo from Google Books API
             // I think we need this to be an async function so we wait for the Promise to see if the data was saved properly.
@@ -93,38 +94,43 @@ class Listing extends React.Component {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", ${this.state.user.email}", "${gbBookImage}")`,
+                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${this.state.user.email}", "${gbBookImage}")`,
                         }),
-                  })
+                  }).catch(error => {
+                    console.error(error);
+                });
             // Change this to alert user if their form was NOT submitted properly.
             if (rv.status !== 200) {
                 alert("Uff da! Something went wrong, please try again.")
-            } else {
-                // Response was status 200 - OK  (Data was successfully saved)  
-                this.handleModalClose();
-                this.fetchBooks();
-            }
+            } 
+            // else {
+            //     // Response was status 200 - OK  (Data was successfully saved)  
+            //     this.handleModalClose();
+            //     this.fetchBooks();
+            // }
         } else {
             alert('Please provide a valid title.')
         }
     }
 
-    sendRequest = async (event, owner, bookID) => {
-        let rv = await fetch(`${backendURL}/notifications`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json"},
-            body: JSON.stringify({
-                requester_email: this.state.user.email,
-                offerer_email: owner,
-                item_id: bookID,
+    sendRequest = async (owner, bookID) => {
+        if (owner !== this.state.user.email) {
+            let rv = await fetch(`${backendURL}/query`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json"},
+                body: JSON.stringify({
+                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${bookID}");`,
+                })
             })
-        })
-        if (rv.status !== 200) {
-            alert("Uff da! Something went wrong, please try again.");
+            if (rv.status !== 200) {
+                alert("Uff da! Something went wrong, please try again.");
+            } else {
+                alert("Request successfully sent!")
+            }
+            console.log(rv);
         } else {
-            alert("Request successfully sent!")
+            alert("You are the owner of this title. Please look for another title.")
         }
-        console.log(rv);
     }
 
     render() {
@@ -139,17 +145,16 @@ class Listing extends React.Component {
                 </Row>
                 <p className="sectionDesc">Care to share or borrow a book?</p>
                 <Row>
-                    
                     {typeof this.state.items !== "undefined" && (
                         // Retry Row and Col?
                         <MDBContainer>
-                            <div className="mdbpopoverDiv">
+                            <Row className="mdbpopoverDiv">
                                 {this.state.items.map(item =>
                                     <MDBPopover
                                         placement="bottom"
                                         popover
                                         clickable
-                                        id={item.isbn}
+                                        key={item.book_id}
                                         className="mdbpopover"
                                     >
                                         <MDBBtn className="listingBtn">
@@ -172,7 +177,7 @@ class Listing extends React.Component {
                                     </MDBPopover>
                                     //<InfoCard className="infoCard" image={item.book_image} title={item.book_title} author={item.book_author} course={item.course} loanPeriod={item.book_loan_period}/>
                                 )}
-                            </div>
+                            </Row>
                         </MDBContainer>
                     )}
                     {typeof this.state.items === "undefined" && (
@@ -204,7 +209,7 @@ class Listing extends React.Component {
                                         <Form.Control ref="GoogleBookID" as="select">
                                             {this.state.bookOptions.map(bookOption =>
                                                 // each option's value is the volume's id
-                                                <option value={bookOption.id}>Author: {bookOption.volumeInfo.authors}&nbsp;Publisher: {bookOption.volumeInfo.publisher}&nbsp;&copy;{bookOption.volumeInfo.publishedDate}</option>
+                                                <option value={bookOption.id} key={bookOption.id}>Author: {bookOption.volumeInfo.authors}&nbsp;Publisher: {bookOption.volumeInfo.publisher}&nbsp;&copy;{bookOption.volumeInfo.publishedDate}</option>
                                             )}
                                         </Form.Control>
                                     </Form.Group>
