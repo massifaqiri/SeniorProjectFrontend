@@ -3,13 +3,13 @@ import { Button, Form, Row, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
 
 // Custom imports
-import './Listing.css';
+import './Textbooks.css';
 
 const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 const googleAPI = "https://www.googleapis.com/books/v1/volumes";
 
 // Add objects parameter; list of lists (info for InfoCards)
-class Listing extends React.Component {
+class Textbooks extends React.Component {
     constructor(props) {
         super(props);
         this.state = { items: [],
@@ -230,4 +230,4 @@ class Listing extends React.Component {
     }
 }
 
-export default Listing;
+export default Textbooks;

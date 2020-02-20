@@ -1,8 +1,7 @@
 // src/components/Profile.js
 
-import React from "react"; //useState
+import React, { useState } from "react"; //useState
 import { Button } from "react-bootstrap"; // Modal
-import { useAuth0 } from "../react-auth0-spa";
 // import UserDetails_Modal from "./UserDetails_Modal";
 
 import "./Profile.css";
@@ -10,13 +9,13 @@ import "./Profile.css";
 const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 
 const Profile = (props) => {
-
-  const { loading, user, logout } = useAuth0();
   
+  let email = "";
+
   const [showModal, setShow] = useState(false);
 
   function handleShow() {
-    fetchUserData(user.email);
+    fetchUserData(email);
     setShow(true);
   };
 

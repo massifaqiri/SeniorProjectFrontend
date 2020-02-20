@@ -95,7 +95,7 @@ class Landing extends React.Component {
         return (
             <div className="Home">
                 <div className="clearfix">
-                    <img className="bell2" src={require("./bell.png")} alt="Luther Bell"/>
+                    <img className="bell2" src={require("./images/bell.png")} alt="Luther Bell"/>
                     <h1 className="heading1">Home</h1>
                     <h3 className="heading3">See updates here</h3>
                 </div>

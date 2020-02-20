@@ -10,12 +10,13 @@ import {
 // Class Imports
 import Home from "./Home";
 import Landing from "./Landing"
-import Listing from "./components/Listing";
+import Textbooks from "./categories/Textbooks";
 import Categories from "./Categories";
-import NavBar from "./components/Navbar";
-import { useAuth0 } from "./react-auth0-spa.js";
-import Profile from "./components/Profile";
-import Sender from "./components/Sender";
+import NavBar from "./Navbar";
+import Profile from "./Profile";
+import SignIn from "./SignIn";
+import RecoverPassword from "./RecoverPassword";
+import CreateAccount from "./CreateAccount";
 
 // Bootstrap Imports
 import { Navbar, Spinner } from 'react-bootstrap';
@@ -24,20 +25,20 @@ import { Navbar, Spinner } from 'react-bootstrap';
 import { withAuthenticator } from 'aws-amplify-react';
 import Amplify, { Auth } from 'aws-amplify';
 
-// App: main body of the page. Includes form, test, image
+// App: main body of the page
 const App = () => {
 
-  const { loading, user } = useAuth0();
+  // TODO: Check if a user is logged in (determines view)
 
-  if (loading) {
-    return (
-      <Fragment>
-        &nbsp;
-        <Spinner animation="border" size="sm"/>
-        &nbsp;Loading...
-      </Fragment>
-    )
-  }
+
+  // Loading Page -- can we still use this?
+  //   return (
+  //     <Fragment>
+  //       &nbsp;
+  //       <Spinner animation="border" size="sm"/>
+  //       &nbsp;Loading...
+  //     </Fragment>
+  //   )
 
   // Returns the App Instance
   return (
@@ -45,38 +46,44 @@ const App = () => {
       <Router>
         {/* Nav Bar -- on all pages */}
         <Navbar className="App-navBar" expand="lg" sticky="top">
-          <img src={require("./campushare_logo.png")} className="logo" alt="CampusShare Logo"/>
+          <img src={require("./images/campushare_logo.png")} className="logo" alt="CampusShare Logo"/>
           {/* Change button color - Use bsPrefix? */}
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-
             <NavBar />
-
           </Navbar.Collapse>
         </Navbar>
         <div className="element">
           {/* Renders the proper content based on route */}
           <Switch>
             <Route path="/" exact>
-              {typeof user !== "undefined" && (
-                <Landing userData={user} />
-              )}
-              {typeof user === "undefined" && (
+              {/* TODO: Route Landing or Home based on if a user is logged in */}
+              {/* <Landing /> */}
                 <Home />
-              )}
             </Route>
-            <Route path="/textbooks">
-              <Listing sectionTitle="Textbooks" className="listing" userData={user} />
-            </Route>
+            {/* Listing of Categories */}
             <Route path="/categories">
               <Categories />
+            </Route>
+            {/* Category Pages */}
+            <Route path="/textbooks">
+              <Textbooks sectionTitle="Textbooks" className="listing" />
+            </Route>
+            <Route path="/misc">
+              {/* <Misc /> */}
             </Route>
             <Route path="/profile">
               <h1>Profile Page</h1>
               <Profile />
             </Route>
-            <Route path="/sender">
-              <Sender />
+            <Route path="/signin">
+              <SignIn />
+            </Route>
+            <Route path="/recoverpassword">
+              <RecoverPassword />
+            </Route>
+            <Route path="/createaccount">
+              <CreateAccount />
             </Route>
           </Switch>
         </div>
