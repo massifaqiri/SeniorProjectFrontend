@@ -46,7 +46,7 @@ class CreateAccount extends React.Component {
                         </Col>
                     </Form.Group>
                     <p>Grad Year</p>
-                    <p>Majors & Minors</p>
+                    <p>Majors &and; Minors</p>
                     <p>Interests</p>
                     <Form.Group as={Row}>
                         <Col sm={{span: 10, offset:2}}>
