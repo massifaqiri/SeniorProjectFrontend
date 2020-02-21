@@ -17,6 +17,7 @@ import Profile from "./Profile";
 import SignIn from "./SignIn";
 import RecoverPassword from "./RecoverPassword";
 import CreateAccount from "./CreateAccount";
+import ResetPassword from "./ResetPassword";
 
 // Bootstrap Imports
 import { Navbar, Spinner } from 'react-bootstrap';
@@ -89,6 +90,9 @@ class App extends React.Component {
               </Route>
               <Route path="/createaccount">
                 <CreateAccount />
+              </Route>
+              <Route path="/resetpassword">
+                <ResetPassword />
               </Route>
             </Switch>
           </div>

@@ -33,7 +33,6 @@ class CreateAccount extends React.Component {
                                     <InputGroup.Append>
                                         <InputGroup.Text id="inputGroupAppend">@luther.edu</InputGroup.Text>
                                     </InputGroup.Append>
-                                {/* Add @luther.edu ending */}
                                 <Form.Control.Feedback type="invalid">
                                 Please use your valid luther.edu email.
                                 </Form.Control.Feedback>
