@@ -5,6 +5,9 @@ import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+// Use this reference anytime the backend is needed
+global.backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
+
 ReactDOM.render(
     <Router>
         <App />

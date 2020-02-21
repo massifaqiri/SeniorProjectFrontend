@@ -13,7 +13,7 @@ class Home extends React.Component {
                 <ControlledCarousel id="slideshow"/>
                 <div class="text-center">
                     <a href="/signin"><Button variant="success">Sign In</Button></a>
-                    <Button variant="secondary">Create Account</Button>
+                    <a href="/createaccount"><Button variant="secondary">Create Account</Button></a>
                 </div>
             </div>
         );
