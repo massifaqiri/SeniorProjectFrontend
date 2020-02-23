@@ -1,5 +1,3 @@
-// src/components/NavBar.js
-
 import React, { Fragment } from "react";
 import { Button } from "react-bootstrap";
 import { useAuth0 } from "../react-auth0-spa.js";

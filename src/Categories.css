@@ -2,6 +2,31 @@ div {
     white-space: pre-wrap;
 } 
 
+.categoryFigure .categoryFigcaption{
+    width: 100px;
+    text-align: center;
+    display: inline-block;
+    overflow: visible;
+}
+
+.categoryFigcaption {
+    width: 100%;
+    text-align: center;
+}
+
+.categoryFigure:hover {
+    text-decoration: none;
+    color: #FF533D;
+    font-weight: bold;
+}
+
+a.nounderline {text-decoration: none;}
+
+.categoryFigcaption:hover {
+    text-decoration: none;
+    color: #FF533D;
+}
+
 .categoryImg {
     width: 100px;
     height: 100px;

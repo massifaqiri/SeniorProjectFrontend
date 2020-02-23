@@ -25,13 +25,8 @@ import { Navbar, Spinner } from 'react-bootstrap';
 import { withAuthenticator } from 'aws-amplify-react';
 import Amplify, { Auth } from 'aws-amplify';
 
-
-
-// const image = require('img/favoritebook.jpg');
-
 // App: main body of the page. Includes form, test, image
 const App = () => {
-
 
   const { loading, user } = useAuth0();
 
@@ -61,8 +56,6 @@ const App = () => {
           </Navbar.Collapse>
         </Navbar>
         <div className="element">
-
-          {/* TODO: Add Nested Routing  for details on textbooks? */}
           {/* Renders the proper content based on route */}
           <Switch>
             <Route path="/" exact>
