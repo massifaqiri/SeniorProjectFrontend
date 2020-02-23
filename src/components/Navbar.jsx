@@ -43,8 +43,8 @@ const NavBar = () => {
             {!isAuthenticated && (
                 <Fragment>
                     <Nav className="justify-content-end">
-                        <Nav.Link>About us</Nav.Link>
-                        <Nav.Link>How does it work</Nav.Link>
+                        <Nav.Link href="about">About us</Nav.Link>
+                        <Nav.Link href="howdoesitwork">How does it work</Nav.Link>
                     </Nav>
 
                 </Fragment>
