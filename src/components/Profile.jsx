@@ -1,6 +1,6 @@
 // src/components/Profile.js
 
-import React from "react"; //useState
+import React, { useState } from "react"; //useState
 import { Button } from "react-bootstrap"; // Modal
 import { useAuth0 } from "../react-auth0-spa";
 // import UserDetails_Modal from "./UserDetails_Modal";
