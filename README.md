@@ -16,14 +16,14 @@ Command line:
 2. Install dependencies:  
 Command line:  
 ```npm install```  
-:warning: If you recieve an error as described below in the debugging section, check out [npm-install-all](https://www.npmjs.com/package/npm-install-all) as an alternate way to install dependcies.
+:warning: If you recieve an error as described below in the debugging section, check out [npm-install-all](https://www.npmjs.com/package/npm-install-all) as an alternate method.
 
 ## Debugging
-### Installing dependncies
-:bulb: If you recieve a variation on the following error:  
-```could not find module "XXX"```  
-try running the following command:  
-```npm install "XXX"```  
-replacing "XXX" with the module name.  
+### Installing dependencies
+:bulb:  If you recieve a variation on the following error:  
+        ```could not find module "XXX"```  
+        try running the following command:  
+        ```npm install "XXX"```  
+        replacing "XXX" with the module name.  
 
 Contact us with any questions, comments, concerns, or feedback!
