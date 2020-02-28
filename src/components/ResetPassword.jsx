@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Form } from 'react-bootstrap';
 const bcrypt = require('bcryptjs');
 
-
 class ResetPassword extends React.Component {
     constructor(props){
         super(props);
@@ -13,14 +12,14 @@ class ResetPassword extends React.Component {
     }
 
     // Save Password to DB (HASH & SALT!)
-    // Also need to know which user it is! How do I do this with email???
+    // Also need to know which user it is -- could probably pull from URL parameter! (still not secure, though...)
     savePassword = async (password) => {
         bcrypt.hash(password, 8, async function(err, hash){
             await fetch(`${global.backendURL}/query`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    query: `UPDATE Users SET password='${hash}' WHERE email='hoffka04@luther.edu'`,
+                    query: `UPDATE Users SET password='${hash}' WHERE email='hoffka04'@luther.edu`,
                 })
             })
         })
@@ -38,7 +37,7 @@ class ResetPassword extends React.Component {
 
     render() {
         return (
-            // Form to change password (enter x2 and make sure to match!)
+            // Form to change password
             <Form noValidate validated={this.state.validated} onSubmit={this.handleSubmit}>
                 <Form.Group controlId="newPassword">
                     <Form.Label>New Password</Form.Label>

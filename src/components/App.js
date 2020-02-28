@@ -7,6 +7,7 @@ import {
     Route
 } from "react-router-dom";
 
+
 // Class Imports
 import Home from "./Home";
 // import Landing from "./Landing"
@@ -34,8 +35,18 @@ class App extends React.Component {
   }
 
   // TODO: Check if a user is logged in (determines view)
-
-
+  authenticate = () => {
+    const fakeAuth = {
+      isAuthenticated: false,
+      authenticate(cb) {
+        this.isAuthenticated = true;
+        setTimeout(cb, 100); // fake async
+      },
+      signout(cb) {
+        this.isAuthenticated = false;
+        setTimeout(cb, 100); // fake async
+      }
+  }
   // Loading Page -- can we still use this in render?
   //   return (
   //     <Fragment>
@@ -68,9 +79,7 @@ class App extends React.Component {
                   <Home />
               </Route>
               {/* Listing of Categories */}
-              <Route path="/categories">
-                <Categories />
-              </Route>
+              <Route path="/categories" component={Categories}/>
               {/* Category Pages */}
               <Route path="/textbooks">
                 <Textbooks sectionTitle="Textbooks" className="listing" />
@@ -78,6 +87,7 @@ class App extends React.Component {
               <Route path="/misc">
                 {/* <Misc /> */}
               </Route>
+              {/* Routes that need authentication */}
               <Route path="/profile">
                 <h1>Profile Page</h1>
                 <Profile />
@@ -91,7 +101,7 @@ class App extends React.Component {
               <Route path="/createaccount">
                 <CreateAccount />
               </Route>
-              <Route path="/resetpassword">
+              <Route path="/resetpassword:norsekey">
                 <ResetPassword />
               </Route>
             </Switch>

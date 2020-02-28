@@ -1,43 +1,44 @@
 import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import './SignIn.css';
+const bcrypt = require('bcryptjs');
 
 class SignIn extends React.Component {
 
     constructor(props){
         super(props);
-        this.verify = this.verify.bind(this);
-        this.verifyPassword = this.verifyPassword.bind(this);
-        this.verifyUsername = this.verifyUsername.bind(this);
+        this.verifyLogin = this.verifyLogin.bind(this);
     }
 
-    // check username exists
-    verifyUsername() {
-        // fetch()...
-    }
+    // check email exists and password is correct
+    verifyLogin = async () => {
+        let email = `${this.refs.email.value}@luther.edu`;
+        let password = this.refs.password.value;
+        const response = await fetch(`${global.backendURL}/query`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({
+                query: `SELECT password WHERE email='${email}'`,
+            })
+        });
+        console.log(await response.json());
+        // bcrypt.compare(password, hash, function(err, res) {
+        //     console.log(res);
+        // });
 
-    // check password is correct
-    verifyPassword() {
-        // fetch()...
-    }
-
-    verify() {
-        console.log("Verifying Login Info!")
-        // this.verifyUsername();
-        // this.verifyPassword();
     }
 
     // Render Form to take username & password
     render() {
         return (
-            <div class="row justify-content-center">
+            <div className="row justify-content-center">
                 <Col sm={12} md={8} lg={6}>
-                    <Form>
+                    <Form onSubmit={this.verifyLogin}>
                         <Form.Group as={Row} controlId="validationUsername">
                             <Form.Label column sm={2}>Email</Form.Label>
                             <Col sm={10} md={10} lg={10}>
                                 <InputGroup>
-                                    <Form.Control type="text" placeholder="norsekey" required />
+                                    <Form.Control type="text" ref="email" placeholder="norsekey" required />
                                         <InputGroup.Append>
                                             <InputGroup.Text id="inputGroupAppend">@luther.edu</InputGroup.Text>
                                         </InputGroup.Append>
@@ -51,13 +52,13 @@ class SignIn extends React.Component {
                         <Form.Group as={Row} controlId="validationPassword">
                             <Form.Label column sm={2}>Password</Form.Label>
                             <Col sm={10} md={10} lg={10}>                    
-                                <Form.Control type="password" placeholder="Password" />
+                                <Form.Control type="password" ref="password" placeholder="Password" />
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
                             {/* Option for Resetting Password --> will need email functionality! */}
                             <Col sm={{span: 10, offset:2}}>
-                                <a class="tinytext" href="/recoverpassword">Reset Password</a>
+                                <a className="tinytext" href="/recoverpassword">Reset Password</a>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId="staySignedIn">
@@ -68,7 +69,7 @@ class SignIn extends React.Component {
                         </Form.Group>
                         <Form.Group as={Row}>
                             <Col sm={{span: 10, offset:2}}>
-                                <Button variant="primary" type="button" onClick={this.verify}>Sign In</Button>
+                                <Button variant="primary" type="submit">Sign In</Button>
                             </Col>
                         </Form.Group>
                     </Form>
