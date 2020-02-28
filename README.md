@@ -2,6 +2,8 @@
 Welcome to Campus Share! Here's what we have documented:  
 - [X] Dependencies
 - [X] Development Environment Setup
+- [X] Running the Application
+- [ ] Testing
 - [X] Debugging
 
 ## Dependencies
@@ -22,6 +24,16 @@ npm install
 ```  
 :warning:  
 If you recieve an error as described below in the debugging section, check out [npm-install-all](https://www.npmjs.com/package/npm-install-all) as an alternate method.
+
+## Running the Application
+Start command:  
+```
+npm start
+```
+Tip: you can install [nodemon](https://nodemon.io/) to automatically reload the app to reflect changes!  
+
+## Testing
+:construction_worker: Under construction!
 
 ## Debugging
 ### Installing dependencies
