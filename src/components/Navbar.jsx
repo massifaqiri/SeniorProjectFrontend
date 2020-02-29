@@ -8,7 +8,6 @@ const NavBar = () => {
 
     return (
         <Fragment>
-
             { global.customAuth.isAuthenticated
                 ? (
                     <Fragment>
