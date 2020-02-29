@@ -6,7 +6,7 @@ class ResetPassword extends React.Component {
     constructor(props){
         super(props);
         this.savePassword = this.savePassword.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        // this.handleSubmit = this.handleSubmit.bind(this);
         this.state = { validated: false,
                        passwordSaved: false }
     }
@@ -19,20 +19,26 @@ class ResetPassword extends React.Component {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    query: `UPDATE Users SET password='${hash}' WHERE email='hoffka04'@luther.edu`,
+                    query: `UPDATE Users SET password='${hash}' WHERE email='${global.customAuth.email}`,
                 })
-            })
-        })
+            }).then(response => response.json()
+            .then(console.log(response)));
+            // Check response to make sure this goes through! before reloading the page.
+        });
+        // Require users to sign in again?
     }
 
-    handleSubmit = event => {
+    handleSubmit = () => {
         let password = this.refs.newPassword.value;
+        console.log(password);
         if (password.length === 0) {
-            event.preventDefault();
-            event.stopPropagation();
+            alert("no password");
+        } else {
+            this.savePassword(this.refs.newPassword.value);
+            alert("password saved successfully!")
+            setTimeout(5000);
+            this.setState({validated: true});
         }
-        this.savePassword(this.refs.newPassword.value);
-        this.setState({validated: true});
     }
 
     render() {

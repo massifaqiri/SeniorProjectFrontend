@@ -4,8 +4,7 @@ import {
     BrowserRouter as Router,
     Switch,
     Route,
-    Redirect,
-    withRouter,
+    Redirect
 } from "react-router-dom";
 
 // Component Imports
@@ -21,7 +20,6 @@ import CreateAccount from "./CreateAccount";
 import Home from "./Home";
 import Profile from "./Profile";
 import RecoverPassword from "./RecoverPassword";
-import ResetPassword from "./ResetPassword";
 
 // Category Pages
 import Textbooks from "./categories/Textbooks";
@@ -113,7 +111,6 @@ const App = () => {
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
             <PrivateRoute path="/recoverpassword" component={RecoverPassword} />
-            <PrivateRoute path="/resetpassword:norsekey" component={ResetPassword} />
           </Switch>
         </div>
         </Router>

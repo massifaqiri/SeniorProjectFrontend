@@ -1,10 +1,11 @@
 // src/components/Profile.js
 
-import React, { useState } from "react"; //useState
-import { Button } from "react-bootstrap"; // Modal
+import React, { useState, Fragment } from "react"; //useState
+import { Button, Col, Modal, Row} from "react-bootstrap"; // Modal
 // import UserDetails_Modal from "./UserDetails_Modal";
 
 import "./Profile.css";
+import ResetPassword from "./ResetPassword";
 
 const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 
@@ -43,7 +44,7 @@ const Profile = (props) => {
     })
     .then(response => response.json())
     .then(data => userdata = data);
-  } 
+  }
 
   let majors = ["Accounting", "Africana Studies", "Allied Health Sciences", "Anthropology", "Art", 
                   "Biblical Languages", "Biology",
@@ -69,7 +70,23 @@ const Profile = (props) => {
   }
 
   return (
-    <h1>Profile Page</h1>
+    <Fragment>
+      <h1>Profile Page</h1>
+      <Row>
+        <Col>
+          <p>Change Password</p>
+          <ResetPassword />
+        </Col>
+        <Col>
+          <p>Details</p>
+          <p>{userdata}</p>
+          <Button onClick={handleShow}>Edit</Button>
+          <Modal show={showModal}>
+            <Button onClick={saveChanges}>Save</Button>
+          </Modal>
+        </Col>
+      </Row>
+    </Fragment>
   );
 };
 
