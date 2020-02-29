@@ -15,7 +15,6 @@ class Textbooks extends React.Component {
         this.state = { items: [],
                        bookOptions: [],
                        showModal: false,
-                       user: this.props.userData,
                        API_KEY: "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M"}
         this.handleModalShow = this.handleModalShow.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
@@ -86,7 +85,7 @@ class Textbooks extends React.Component {
             // }
 
             let gbBookImage = gbVolInfo.imageLinks.smallThumbnail;
-            console.log(`"${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${this.state.user.email}", "${gbBookImage}"`);
+            console.log(`"${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}"`);
 
             // TODO: auto-populate author & ISBN, and grab photo from Google Books API
             // I think we need this to be an async function so we wait for the Promise to see if the data was saved properly.
@@ -94,7 +93,7 @@ class Textbooks extends React.Component {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${this.state.user.email}", "${gbBookImage}")`,
+                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}")`,
                         }),
                   }).catch(error => {
                     console.error(error);
@@ -114,12 +113,12 @@ class Textbooks extends React.Component {
     }
 
     sendRequest = async (owner, bookID) => {
-        if (owner !== this.state.user.email) {
+        if (owner !== global.customAuth.email) {
             let rv = await fetch(`${backendURL}/query`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${bookID}");`,
+                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${global.customAuth.email}", "${owner}", "${bookID}");`,
                 })
             })
             if (rv.status !== 200) {
