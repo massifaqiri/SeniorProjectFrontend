@@ -30,29 +30,47 @@ import Misc from "./categories/Misc";
 // Bootstrap Imports
 import { Navbar } from 'react-bootstrap';
 
-// Amplify imports
-import { withAuthenticator } from 'aws-amplify-react';
-import Amplify, { Auth } from 'aws-amplify';
-
+const getCookie = (cname) => {
+  let name = cname + "=";
+  let decodedCookie = decodeURIComponent(document.cookie);
+  let ca = decodedCookie.split(';');
+  for(let i = 0; i <ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
 
 // TODO: Check if a user is logged in with JWTs
-const customAuth = {
-  isAuthenticated: false,
-  // Replace with *actual* authentication
-  authenticate(cb) {
-    this.isAuthenticated = true;
-    setTimeout(cb, 100); // fake async
+global.customAuth = {
+  isAuthenticated: (getCookie("auth") !== ""),
+  email: getCookie("email"),
+  authenticate(email) {
+    this.email = email;
+    // Set expires to 24 hrs by default; add 14 days based on user selection later
+    let d = new Date();
+    d.setTime(d.getTime() + (24*60*60*1000));
+    document.cookie = `auth=true; expires=${d.toUTCString()}; path=/;`;
+    document.cookie = `email=${this.email}; expires=${d.toUTCString()}; path=/;`
   },
-  // Replace with *actual* signout
-  signout(cb) {
-    this.isAuthenticated = false;
-    setTimeout(cb, 100); // fake async
+  signout() {
+    // Set to Past Date
+    let d = new Date();
+    d.setTime(d.getTime() - (24*60*60*1000));
+    document.cookie = `auth=false; expires=${d.toUTCString()}; path=/;`;
+    document.cookie = `email=""; expires=${d.toUTCString()}; path=/;`
+    window.location.href = "/";
   }
 }
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (
-    customAuth.authenticated
+    global.customAuth.isAuthenticated
       ? <Component {...props} />
       : <Redirect to='/signin' />
   )} />
@@ -80,7 +98,7 @@ const App = () => {
             <Route path="/" exact render={(props) => (
               // The order of Landing and Home is opposite to what I would expect
               // ...just rolling with it for now.
-              customAuth.isAuthenticated
+              global.customAuth.isAuthenticated
               ? <Landing />
               : <Home {...props} />
             )} />

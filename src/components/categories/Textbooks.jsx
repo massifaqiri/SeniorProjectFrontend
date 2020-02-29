@@ -139,7 +139,7 @@ class Textbooks extends React.Component {
             <Fragment>
                 <Row>
                     <h1 className="sectionTitle">{this.props.sectionTitle}</h1>
-                    {typeof this.state.user !== "undefined" && (
+                    {global.customAuth.isAuthenticated && (
                         <Button onClick={this.handleModalShow}>Add Listing</Button>
                     )}
                 </Row>

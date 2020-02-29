@@ -1,7 +1,10 @@
 import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
+import { Redirect } from 'react-router';
 import './SignIn.css';
+
 const bcrypt = require('bcryptjs');
+
 
 class SignIn extends React.Component {
 
@@ -10,21 +13,44 @@ class SignIn extends React.Component {
         this.verifyLogin = this.verifyLogin.bind(this);
     }
 
+    // Redirect to Home if User is Already Logged in
+    componentDidMount() {
+        if (global.customAuth.isAuthenticated) {
+            window.location.href = "/";
+        }
+    }
+
     // check email exists and password is correct
-    verifyLogin = async () => {
+    verifyLogin = async (event) => {
+        event.preventDefault(); // Page Reload
+        console.log("verifying login")
         let email = `${this.refs.email.value}@luther.edu`;
         let password = this.refs.password.value;
-        const response = await fetch(`${global.backendURL}/query`, {
+        let hash;
+        await fetch(`${global.backendURL}/query`, {
             method: "POST",
             headers: { "Content-Type": "application/json"},
             body: JSON.stringify({
-                query: `SELECT password WHERE email='${email}'`,
+                query: `SELECT password FROM Users WHERE email='${email}'`,
             })
-        });
-        console.log(await response.json());
-        // bcrypt.compare(password, hash, function(err, res) {
-        //     console.log(res);
-        // });
+        }).then(response => response.json()
+        .then(response => hash = response.data[0].password));
+        if (typeof hash !== "undefined") {
+            bcrypt.compare(password, hash, function(err, res) {
+                // res is true or false
+                if (res) {
+                    global.customAuth.authenticate(email);
+                    window.location.href = "/"; // Replace with page that was last trying to be accessed?
+                } else {
+                    alert("wrong password");
+                };
+            });
+        } else {
+            alert('email does not exist');
+        }
+
+        // If login is correct, then:
+        // global.customAuth.authenticate()
 
     }
 

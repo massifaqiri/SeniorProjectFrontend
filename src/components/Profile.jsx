@@ -9,6 +9,8 @@ import "./Profile.css";
 const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 
 const Profile = (props) => {
+
+  // TODO: Add "change password"
   
   let email = "";
 
@@ -65,6 +67,10 @@ const Profile = (props) => {
   for (var i = 0; i < majors.length; i++) {
       majors_options.push(<option key={majors[i]}>{majors[i]}</option>)
   }
+
+  return (
+    <h1>Profile Page</h1>
+  );
 };
 
 export default Profile;

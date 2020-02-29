@@ -11,7 +11,7 @@ class Home extends React.Component {
         return (
             <div className="Home">
                 <ControlledCarousel id="slideshow"/>
-                <div class="text-center">
+                <div className="text-center">
                     <a href="/signin"><Button variant="success">Sign In</Button></a>
                     <a href="/createaccount"><Button variant="secondary">Create Account</Button></a>
                 </div>

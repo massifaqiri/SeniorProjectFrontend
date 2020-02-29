@@ -1,36 +1,39 @@
 // src/components/NavBar.js
 
 import React, { Fragment } from "react";
-import { Nav, Navbar } from "react-bootstrap"; //Button
-// import { Link } from "react-router-dom";
+import { Button, Nav, Navbar } from "react-bootstrap";
 
 
 const NavBar = () => {
 
     return (
         <Fragment>
-            <Fragment>
-                <Nav className="mr-auto">
-                    <Nav.Link href="/">Home</Nav.Link>
-                    <Nav.Link href="categories">Categories</Nav.Link>
-                </Nav>
-                <Nav className="justify-content-end">
-                    <Navbar.Text>
-                        {/* Signed in as: <a href="profile">{username}</a> */}
-                    </Navbar.Text>
-                </Nav>
-            </Fragment>
 
-            {/* Handles all non-authenticated sessions */}
-            {/* {!isAuthenticated && (
-                <Fragment>
-                    <Nav className="justify-content-end">
-                        <Nav.Link>About us</Nav.Link>
-                        <Nav.Link>How does it work</Nav.Link>
-                    </Nav>
+            { global.customAuth.isAuthenticated
+                ? (
+                    <Fragment>
+                        <Nav className="mr-auto">
+                            <Nav.Link href="/">Home</Nav.Link>
+                            <Nav.Link href="/categories">Categories</Nav.Link>
+                        </Nav>
+                        <Nav className="justify-content-end">
+                            <Navbar.Text>
+                                Signed in as: <a href="/profile">{global.customAuth.email}</a>
+                            </Navbar.Text>
+                            <Button variant="outline-secondary" size="sm" onClick={global.customAuth.signout}>Sign Out</Button>
+                        </Nav>
+                    </Fragment>
+                )
+                : (
+                    <Fragment>
+                        <Nav className="justify-content-end">
+                            <Nav.Link>About us</Nav.Link>
+                            <Nav.Link>How does it work</Nav.Link>
+                        </Nav>
 
-                </Fragment>
-            )} */}
+                    </Fragment>
+                )
+            }
         </Fragment>
     );
 };
