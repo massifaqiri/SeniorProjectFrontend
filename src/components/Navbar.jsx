@@ -1,54 +1,38 @@
 // src/components/NavBar.js
 
 import React, { Fragment } from "react";
-import { Nav, Navbar } from "react-bootstrap"; //Button
-// import { Link } from "react-router-dom";
-import { useAuth0 } from "../react-auth0-spa.js";
+import { Button, Nav, Navbar } from "react-bootstrap";
 
 
 const NavBar = () => {
-    const { loading, isAuthenticated, user } = useAuth0();
 
-    let username = "undefined";
-
-    if (user) {
-        username = user.name;
-    }
-
-    // Keeps content from switching to non-logged in user while loading
-    if (loading) {
-        return (
-            <Fragment>
-                <p>&nbsp;</p>
-            </Fragment>
-        )
-    }
     return (
         <Fragment>
-            {isAuthenticated && (
-                <Fragment>
-                    <Nav className="mr-auto">
-                        <Nav.Link href="/">Home</Nav.Link>
-                        <Nav.Link href="categories">Categories</Nav.Link>
-                    </Nav>
-                    <Nav className="justify-content-end">
-                        <Navbar.Text>
-                            Signed in as: <a href="profile">{username}</a>
-                        </Navbar.Text>
-                    </Nav>
-                </Fragment>
-            )}
+            { global.customAuth.isAuthenticated
+                ? (
+                    <Fragment>
+                        <Nav className="mr-auto">
+                            <Nav.Link href="/">Home</Nav.Link>
+                            <Nav.Link href="/categories">Categories</Nav.Link>
+                        </Nav>
+                        <Nav className="justify-content-end">
+                            <Navbar.Text>
+                                Signed in as: <a href="/profile">{global.customAuth.email}</a>
+                            </Navbar.Text>
+                            <Button variant="outline-secondary" size="sm" onClick={global.customAuth.signout}>Sign Out</Button>
+                        </Nav>
+                    </Fragment>
+                )
+                : (
+                    <Fragment>
+                        <Nav className="justify-content-end">
+                            <Nav.Link>About us</Nav.Link>
+                            <Nav.Link>How does it work</Nav.Link>
+                        </Nav>
 
-            {/* Handles all non-authenticated sessions */}
-            {!isAuthenticated && (
-                <Fragment>
-                    <Nav className="justify-content-end">
-                        <Nav.Link href="about">About us</Nav.Link>
-                        <Nav.Link href="howdoesitwork">How does it work</Nav.Link>
-                    </Nav>
-
-                </Fragment>
-            )}
+                    </Fragment>
+                )
+            }
         </Fragment>
     );
 };
