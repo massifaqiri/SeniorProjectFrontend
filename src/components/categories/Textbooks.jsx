@@ -3,9 +3,8 @@ import { Button, Form, Row, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
 
 // Custom imports
-import './Textbooks.css';
+import './Listing.css';
 
-const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 const googleAPI = "https://www.googleapis.com/books/v1/volumes";
 
 // Add objects parameter; list of lists (info for InfoCards)
@@ -31,7 +30,7 @@ class Textbooks extends React.Component {
 
     // fetchBooks: retrieves current listings from Textbooks table
     fetchBooks = async() => {
-        await fetch(`${backendURL}/querytextbooks`)
+        await fetch(`${global.backendURL}/querytextbooks`)
         .then(response => response.json())
         .then(data => this.setState({ items: data }));
     };
@@ -89,7 +88,7 @@ class Textbooks extends React.Component {
 
             // TODO: auto-populate author & ISBN, and grab photo from Google Books API
             // I think we need this to be an async function so we wait for the Promise to see if the data was saved properly.
-            let rv = await fetch(`${backendURL}/query`, {
+            let rv = await fetch(`${global.backendURL}/query`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
@@ -114,19 +113,19 @@ class Textbooks extends React.Component {
 
     sendRequest = async (owner, bookID) => {
         if (owner !== global.customAuth.email) {
-            let rv = await fetch(`${backendURL}/query`, {
+            let response = await fetch(`${global.backendURL}/query`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${global.customAuth.email}", "${owner}", "${bookID}");`,
+                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id, source_table) VALUES ("${global.customAuth.email}", "${owner}", "${bookID}", "Textbooks");`,
                 })
             })
-            if (rv.status !== 200) {
+            if (response.status !== 200) {
                 alert("Uff da! Something went wrong, please try again.");
             } else {
                 alert("Request successfully sent!")
             }
-            console.log(rv);
+            console.log(response);
         } else {
             alert("You are the owner of this title. Please look for another title.")
         }

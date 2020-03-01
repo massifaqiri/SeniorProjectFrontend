@@ -70,7 +70,7 @@ class Categories extends React.Component {
                         </a>
                     </Col>
                     <Col>
-                        <a href="categories" className="nounderline">
+                        <a href="/misc" className="nounderline">
                             <figure class="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/umbrella.png" className="categoryImg"/>
                                 <figcaption class="categoryFigcaption">Misc.</figcaption>
