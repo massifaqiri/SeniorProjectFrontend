@@ -3,12 +3,13 @@ import { Button, Form, Modal, Row } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
 
 
+    // *Actual* listing component that all these others could extend?
+
 // Listing: Parent Component which Categories can inherit from
 //  props must include:
 //      categoryName
 //      categoryDesc (?)
 //      db table name -- can iterate through fields for detail box?
-//      User Auth -- JWT? (using prop "authenticated" as a placeholder for now)
 class Listing extends React.Component {
 
     // Item Listing
