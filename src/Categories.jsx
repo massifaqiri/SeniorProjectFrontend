@@ -96,7 +96,7 @@ class Categories extends React.Component {
                 </Row>
                 <Row className="row">
                     <Col>
-                        <a href="categories" className="nounderline">
+                        <a href="skill" className="nounderline">
                             <figure class="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/skills.png" className="categoryImg"/>
                                 <figcaption class="categoryFigcaption">Skills</figcaption>
@@ -120,7 +120,7 @@ class Categories extends React.Component {
                         </a>
                     </Col>
                     <Col>
-                        <a href="categories" className="nounderline">
+                        <a href="transport" className="nounderline">
                             <figure class="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/transportation.png" className="categoryImg"/>
                                 <figcaption class="categoryFigcaption">Transportation</figcaption>

@@ -14,6 +14,8 @@ import Listing from "./components/Listing";
 import Categories from "./Categories";
 import NavBar from "./components/Navbar";
 import About from "./components/About";
+import Transport from "./components/Transport";
+import Skill from "./components/Skill";
 import { useAuth0 } from "./react-auth0-spa.js";
 import Profile from "./components/Profile";
 import Sender from "./components/Sender";
@@ -81,6 +83,12 @@ const App = () => {
             </Route>
             <Route path="/about">
               <About />
+            </Route>
+            <Route path="/transport">
+              <Transport />
+            </Route>
+            <Route path="/skill">
+              <Skill />
             </Route>
           </Switch>
         </div>
