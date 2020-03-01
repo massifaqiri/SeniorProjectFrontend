@@ -46,21 +46,19 @@ const getCookie = (cname) => {
 
 // TODO: Check if a user is logged in with JWTs
 global.customAuth = {
-  isAuthenticated: (getCookie("auth") !== ""),
+  isAuthenticated: (getCookie("email") !== ""),
   email: getCookie("email"),
   authenticate(email) {
     this.email = email;
     // Set expires to 24 hrs by default; add 14 days based on user selection later
     let d = new Date();
     d.setTime(d.getTime() + (24*60*60*1000));
-    document.cookie = `auth=true; expires=${d.toUTCString()}; path=/;`;
     document.cookie = `email=${this.email}; expires=${d.toUTCString()}; path=/;`
   },
   signout() {
     // Set to Past Date
     let d = new Date();
     d.setTime(d.getTime() - (24*60*60*1000));
-    document.cookie = `auth=false; expires=${d.toUTCString()}; path=/;`;
     document.cookie = `email=""; expires=${d.toUTCString()}; path=/;`
     window.location.href = "/";
   }
@@ -107,7 +105,7 @@ const App = () => {
             </Route>
             <Route path="/misc" component={Misc} />
             <Route path="/signin" component={SignIn} />
-            <PrivateRoute path="/createaccount" component={CreateAccount} />
+            <Route path="/createaccount" component={CreateAccount} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
             <PrivateRoute path="/recoverpassword" component={RecoverPassword} />
