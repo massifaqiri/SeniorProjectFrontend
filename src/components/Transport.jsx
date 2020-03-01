@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { Button, Form, Row, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
-import Image from 'react-bootstrap/Image';
 import "./Transport.css";
 
 const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
