@@ -11,7 +11,8 @@ import {
 import NavBar from "./Navbar";
 
 // Public Pages
-import Landing from "./Landing"
+import Landing from "./Landing";
+import About from "./About";
 import Categories from "./Categories";
 import SignIn from "./SignIn";
 import CreateAccount from "./CreateAccount";
@@ -24,9 +25,8 @@ import RecoverPassword from "./RecoverPassword";
 // Category Pages
 import Textbooks from "./categories/Textbooks";
 import Misc from "./categories/Misc";
-
-// Bootstrap Imports
-import { Navbar } from 'react-bootstrap';
+import LostAndFound from "./categories/LostAndFound";
+import Listing from "./categories/Listing";
 
 const getCookie = (cname) => {
   let name = cname + "=";
@@ -80,13 +80,7 @@ const App = () => {
     <div className="App">
       <Router>
         {/* Nav Bar -- on all pages */}
-        <Navbar className="App-navBar" expand="lg" sticky="top">
-          <img src={require("./images/campushare_logo.png")} className="logo" alt="CampusShare Logo"/>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <NavBar />
-          </Navbar.Collapse>
-        </Navbar>
+        <NavBar />
         <div className="element">
           {/* Renders the proper content based on route */}
           <Switch>
@@ -100,9 +94,12 @@ const App = () => {
             )} />
             <Route path="/categories" component={Categories}/>
             {/* Public Pages */}
+            <Route path="/about" component={About}/>
             <Route path="/textbooks">
               <Textbooks sectionTitle="Textbooks" className="listing" />
             </Route>
+            <Route path="/lostandfound" component={LostAndFound} />
+            <Route path="/listing" component={Listing} />
             <Route path="/misc" component={Misc} />
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />

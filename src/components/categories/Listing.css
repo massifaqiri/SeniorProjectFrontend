@@ -27,6 +27,10 @@ figcaption:hover {
     float: left;
 }
 
+h1 {
+    color: "#FF533D";
+}
+
 .infoCard {
     margin-bottom: 1%;
     height: 87%;
@@ -44,11 +48,11 @@ figcaption:hover {
     height: 25vh;
 }
 
-.sectionTitle {
+.categoryName {
     color: #FF533D;
 }
 
-.sectionDesc {
+.categoryDesc {
     font-style: italic;
-    font-size: x-large;
+    font-size: small;
 }

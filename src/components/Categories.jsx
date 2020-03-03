@@ -44,7 +44,7 @@ class Categories extends React.Component {
                         </a>
                     </Col>
                     <Col>
-                        <a href="categories" className="nounderline">
+                        <a href="/lostandfound" className="nounderline">
                             <figure class="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/lostfound.png" className="categoryImg"/> 
                                 <figcaption class="categoryFigcaption">Lost & Found</figcaption>

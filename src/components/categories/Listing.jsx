@@ -1,7 +1,8 @@
 import React, { Fragment } from 'react';
-import { Button, Form, Modal, Row } from 'react-bootstrap';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
 
+import "./Listing.css";
 
     // *Actual* listing component that all these others could extend?
 
@@ -48,21 +49,27 @@ class Listing extends React.Component {
         return (
             <Fragment>
                 <Row>
-                    <h1 className="categoryName">{this.props.categoryName}</h1>
-                    {/* Add Listing Button - Only shown if current user is logged in */}
-                    { this.props.authenticated && (
-                        <Button onClick={this.handleModalShow}>Add Listing</Button>
-                    )}
+                    <Col xs={8} sm={8} md={10} lg={10} xl={10}>
+                        <h1 className="categoryName">{this.props.categoryName}</h1>
+                    </Col>
+                    <Col className="justify-content-md-end">
+                        {/* Add Listing Button - Only shown if current user is logged in */}
+                        { global.customAuth.isAuthenticated && (
+                            <Button onClick={this.handleModalShow}>Add Listing</Button>
+                            )}
+                    </Col>
                 </Row>
                 <p className="categoryDesc">{this.props.categoryDesc}</p>
 
                 {/* Modal - seen when Add Listing Button is clicked*/}
-                <Modal show={this.state.showModal} onHide={this.handleModalClose}>
-                    <Modal.Header closeButton />
-                    <Modal.Title>Add a new listing to the {this.props.categoryName} Category</Modal.Title>
+                <Modal show={this.state.showModal} onHide={this.handleModalClose} centered size="lg">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Add a new listing to the {this.props.categoryName} Category</Modal.Title>
+                    </Modal.Header>
                     <Modal.Body>
                         <Form onSubmit={this.handleSubmit}>
                             {/* Iterate though fields for DB table? */}
+                            {this.props.children}
                             <Button variant="success" type="submit">Add Listing</Button>
                         </Form>
                     </Modal.Body>

@@ -154,7 +154,7 @@ class Misc extends React.Component {
                             <Row>
                                 <Col>
                                     <InputGroup>
-                                    <InputGroup.Prepend><InputGroup.Text>Item Name</InputGroup.Text></InputGroup.Prepend>
+                                        <InputGroup.Prepend><InputGroup.Text>Item Name</InputGroup.Text></InputGroup.Prepend>
                                         <Form.Control type="text" ref="item_name" placeholder="Enter Name Here" />
                                     </InputGroup>
                                     <Form.Label>Description:</Form.Label>

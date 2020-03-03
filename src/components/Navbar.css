@@ -1,0 +1,17 @@
+/* Have to set background color as the same as App, or the content overlaps */
+.App-navBar {
+    background-color: #F4F4F4;
+  }
+
+.btn-signIn {
+  width: 100%;
+}
+
+.btn-signOut {
+  margin-left: 10px;
+  width: 100%;
+}
+
+.logo {
+  width: 20%;
+}

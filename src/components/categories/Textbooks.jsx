@@ -136,12 +136,12 @@ class Textbooks extends React.Component {
         return (
             <Fragment>
                 <Row>
-                    <h1 className="sectionTitle">{this.props.sectionTitle}</h1>
+                    <h1 className="categoryName">{this.props.sectionTitle}</h1>
                     {global.customAuth.isAuthenticated && (
                         <Button onClick={this.handleModalShow}>Add Listing</Button>
                     )}
                 </Row>
-                <p className="sectionDesc">Care to share or borrow a book?</p>
+                <p className="categoryDesc">Care to share or borrow a book?</p>
                 <Row>
                     {typeof this.state.items !== "undefined" && (
                         // Retry Row and Col?
