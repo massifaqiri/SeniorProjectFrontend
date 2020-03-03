@@ -5,17 +5,15 @@ import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } fr
 // Custom imports
 import './Listing.css';
 
-const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 const googleAPI = "https://www.googleapis.com/books/v1/volumes";
 
 // Add objects parameter; list of lists (info for InfoCards)
-class Listing extends React.Component {
+class Textbooks extends React.Component {
     constructor(props) {
         super(props);
         this.state = { items: [],
                        bookOptions: [],
                        showModal: false,
-                       user: this.props.userData,
                        API_KEY: "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M"}
         this.handleModalShow = this.handleModalShow.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
@@ -32,7 +30,7 @@ class Listing extends React.Component {
 
     // fetchBooks: retrieves current listings from Textbooks table
     fetchBooks = async() => {
-        await fetch(`${backendURL}/querytextbooks`)
+        await fetch(`${global.backendURL}/querytextbooks`)
         .then(response => response.json())
         .then(data => this.setState({ items: data }));
     };
@@ -86,15 +84,15 @@ class Listing extends React.Component {
             // }
 
             let gbBookImage = gbVolInfo.imageLinks.smallThumbnail;
-            console.log(`"${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${this.state.user.email}", "${gbBookImage}"`);
+            console.log(`"${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}"`);
 
             // TODO: auto-populate author & ISBN, and grab photo from Google Books API
             // I think we need this to be an async function so we wait for the Promise to see if the data was saved properly.
-            let rv = await fetch(`${backendURL}/query`, {
+            let rv = await fetch(`${global.backendURL}/query`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${this.state.user.email}", "${gbBookImage}")`,
+                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}")`,
                         }),
                   }).catch(error => {
                     console.error(error);
@@ -114,20 +112,20 @@ class Listing extends React.Component {
     }
 
     sendRequest = async (owner, bookID) => {
-        if (owner !== this.state.user.email) {
-            let rv = await fetch(`${backendURL}/query`, {
+        if (owner !== global.customAuth.email) {
+            let response = await fetch(`${global.backendURL}/query`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${bookID}");`,
+                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id, source_table) VALUES ("${global.customAuth.email}", "${owner}", "${bookID}", "Textbooks");`,
                 })
             })
-            if (rv.status !== 200) {
+            if (response.status !== 200) {
                 alert("Uff da! Something went wrong, please try again.");
             } else {
                 alert("Request successfully sent!")
             }
-            console.log(rv);
+            console.log(response);
         } else {
             alert("You are the owner of this title. Please look for another title.")
         }
@@ -139,7 +137,7 @@ class Listing extends React.Component {
             <Fragment>
                 <Row>
                     <h1 className="sectionTitle">{this.props.sectionTitle}</h1>
-                    {typeof this.state.user !== "undefined" && (
+                    {global.customAuth.isAuthenticated && (
                         <Button onClick={this.handleModalShow}>Add Listing</Button>
                     )}
                 </Row>
@@ -230,4 +228,4 @@ class Listing extends React.Component {
     }
 }
 
-export default Listing;
+export default Textbooks;

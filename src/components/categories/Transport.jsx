@@ -82,7 +82,6 @@ class Transport extends React.Component {
         return (
             <Fragment>
                 <h1 className="transport1">Transportation</h1>
-                {/*<Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/transportation.png" className="transportImage"/> */}
                 <p className="sectionDesc">Care to share a ride?</p>
                 <Row>
                     <Button onClick={this.handleModalShow}>Add Listing</Button>

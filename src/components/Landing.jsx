@@ -9,7 +9,7 @@ class Landing extends React.Component {
     constructor(props) {
         super(props);
         this.state = { showModal: false,
-                       userData: this.props.userData,
+                    //    userData: this.props.userData,
                        requests: [],
                        offers: []
                      }
@@ -17,38 +17,8 @@ class Landing extends React.Component {
         this.dismissNotification = this.dismissNotification.bind(this);
     }
 
-    componentDidMount = async () => {
-        // Have to check for a user to avoid errors thrown (though this page should not be visible if there is not a user)
-        if (this.state.userData !== "undefined") {
-            // Fetch user
-            let userQueryResults = await fetch(`${backendURL}/query`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            query: `SELECT * from Users WHERE email="${this.state.userData.email}"`,
-                        }), }).then(response => response.json());
-            if (userQueryResults.data.length === 0){
-                // console.log("User is new");
-                // Add User to Database
-                await fetch(`${backendURL}/query`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        query: `INSERT INTO Users (email) VALUES ("${this.state.userData.email}")`,
-                    }),
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-                // Display User Details modal
-                this.setState({showModal: true});
-            }
-            this.fetchNotifications();
-        } else {
-            // A non-logged in user shouldn't be able to see this page...
-            console.log("No user");
-        };
-    }
+    // Initial Notification Fetch
+    componentDidMount = () => {this.fetchNotifications()};
 
     fetchNotifications = async () => {
         // Populate Request Notifications
@@ -56,7 +26,7 @@ class Landing extends React.Component {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                query: `SELECT * from Notifications WHERE requester_email="${this.state.userData.email}" ORDER BY notification_id DESC`,
+                query: `SELECT * from Notifications WHERE requester_email="${global.customAuth.email}" ORDER BY notification_id DESC`,
             }), })
             .then(response => response.json())
             .then(data => this.setState({requests: data.data}));
@@ -66,7 +36,7 @@ class Landing extends React.Component {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        query: `SELECT * from Notifications WHERE offerer_email="${this.state.userData.email}" ORDER BY notification_id DESC`,
+                        query: `SELECT * from Notifications WHERE offerer_email="${global.customAuth.email}" ORDER BY notification_id DESC`,
                     }), })
                     .then(response => response.json())
                     .then(data => this.setState({offers: data.data}));
@@ -87,15 +57,17 @@ class Landing extends React.Component {
         this.fetchNotifications();
     }
 
-    // Dismisses a notification (sets that specific Toast component's display to none)
-    dismissNotification = () => {
-    }
+    // Dismisses a notification
+    // Either:
+    //   set that specific Toast component's display to none
+    //   mark as seen in DB?
+    dismissNotification = () => {}
 
     render() {
         return (
             <div className="Home">
                 <div className="clearfix">
-                    <img className="bell2" src={require("./bell.png")} alt="Luther Bell"/>
+                    <img className="bell2" src={require("./images/bell.png")} alt="Luther Bell"/>
                     <h1 className="heading1">Home</h1>
                     <h3 className="heading3">See updates here</h3>
                 </div>
@@ -128,10 +100,19 @@ class Landing extends React.Component {
                                             <small>from {offer.requester_email}</small>
                                         </Toast.Header>
                                         <Toast.Body>
-                                            <p>Please approve or decline this request:</p>
-                                            <Button variant="success" size="sm" onClick={() => this.sendMessage(offer.notification_id, "accepted")}>Approve</Button>
-                                            <Button variant="danger" size="sm" onClick={() => this.sendMessage(offer.notification_id, "declined")}>Decline</Button>
-                                        </Toast.Body>
+                                            {/* TODO: Add info on the request! Join Tables on item_id -- do we need to save the table name in a notification entry then??? */}
+                                            { offer.status === "pending"
+                                              ? (
+                                                <Fragment>
+                                                    <p>Please approve or decline this request:</p>
+                                                    <Button variant="success" size="sm" onClick={() => this.sendMessage(offer.notification_id, "accepted")}>Approve</Button>
+                                                    <Button variant="danger" size="sm" onClick={() => this.sendMessage(offer.notification_id, "declined")}>Decline</Button>
+                                                </Fragment>
+                                                )
+                                              : (
+                                                <p>You have {offer.status} this request.</p>
+                                            )}    
+                                            </Toast.Body>
                                     </Toast>
                                 )
                             )}

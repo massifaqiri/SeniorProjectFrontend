@@ -13,9 +13,9 @@ import Landing from "./Landing"
 import Listing from "./components/Listing";
 import Categories from "./Categories";
 import NavBar from "./components/Navbar";
-import About from "./components/About";
-import Transport from "./components/Transport";
-import Skill from "./components/Skill";
+import About from "./compenents/About";
+import Transport from "./categories/Transport";
+import Skill from "./categories/Skill";
 import { useAuth0 } from "./react-auth0-spa.js";
 import Profile from "./components/Profile";
 import Sender from "./components/Sender";
