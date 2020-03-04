@@ -17,11 +17,15 @@ class Listing extends React.Component {
     constructor(props) {
         super(props);
         this.state = { items: [], // to hold results from querying the DB table
-                       showModal: false};
+                       showModal: false,
+                       showConfirmDelete: false};
         this.fetchItems = this.fetchItems.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
+        this.handleConfirmDeleteShow = this.handleConfirmDeleteShow.bind(this);
+        this.handleConfirmDeleteClose = this.handleConfirmDeleteClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
     }
 
     // Fetch Initial Items
@@ -30,6 +34,8 @@ class Listing extends React.Component {
     // Modal Functions
     handleModalClose = () => {this.setState({showModal: false})};
     handleModalShow = () => {this.setState({showModal: true})};
+    handleConfirmDeleteClose = () => {this.setState({showConfirmDelete: false})};
+    handleConfirmDeleteShow = () => {this.setState({showConfirmDelete: true})};
 
     // Add Item Listing
     handleSubmit = () => {
@@ -38,11 +44,35 @@ class Listing extends React.Component {
 
     // Retrieve Items in current category from DB
     fetchItems = async () => {
-        // Will need to define the global api variable -- Need Massi's input on this
-        // await fetch(`${global.api}`)
-        // .then(response => response.json())
-        // .then(data => this.setState({ items: data }));
+        await fetch(`${global.backendURL}/query`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({
+                query: `SELECT * FROM ${this.props.tableName}`,
+            })
+        })
+        .then(response => response.json())
+        .then(data => this.setState({ items: data }));
     }
+
+    // Request Item: create new notifitaction
+    requestItem = async (requester_email, offerer_email, item_id, source_table) => {
+        await fetch(`${global.backendURL}/query`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({
+                query: `INSERT INTO Notifications (requester_email, offerer_email, item_id, source_table) VALUES ("${requester_email}", "${offerer_email}", "${item_id}", "${source_table}");`,
+            })
+        })
+        .then(response => response.json())
+        .then(data => this.setState({ items: data }));
+    }
+
+    // Delete Item: remove item from DB; current user must be owner
+    deleteItem = async () => {
+        console.log("TODO: Delete item with call to backend");
+    }
+
 
     // Render Page
     render() {
@@ -75,6 +105,19 @@ class Listing extends React.Component {
                     </Modal.Body>
                 </Modal>
 
+                <Modal show={this.state.showConfirmDelete} onHide={this.handleConfirmDeleteClose} animation={false} centered size="sm">
+                    <Modal.Header closeButton>
+                        <Modal.Title>Delete Item</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form onSubmit={this.deleteItem}>
+                            <p>Are you sure you want to delete this item?</p>
+                            <Button variant="" onClick={this.handleConfirmDeleteClose}>Cancel</Button>
+                            <Button variant="danger" type="submit">Yes, Delete</Button>
+                        </Form>
+                    </Modal.Body>
+                </Modal>
+
                 {/* Offerings Cards - Item Title, Image, Dates for Loan (Click for detail box & request button) */}
                 <MDBContainer>
                     <Row className="mdbpopoeverRow">
@@ -95,7 +138,15 @@ class Listing extends React.Component {
                                 <MDBPopoverHeader>{item.title}</MDBPopoverHeader>
                                 <MDBPopoverBody>
                                     {/* Iterate through table fields here! render each as: <p className="p*>{field}</p> */}
-                                    <Button variant="success" size="sm" onClick={() => {this.requestItem(item.owner, item.id)}}>Request</Button>
+                                    
+                                    { item.owner !== global.customAuth.email
+                                        ? <Fragment>
+                                            <p className="p" ref="owner">{item.owner}</p>
+                                            <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                            </Fragment>
+                                        : <Button variant="danger" size="sm" onClick={() => this.handleConfirmDeleteShow}>Delete</Button>
+                                    }
+
                                 </MDBPopoverBody>
                             </MDBPopover>
                         )}

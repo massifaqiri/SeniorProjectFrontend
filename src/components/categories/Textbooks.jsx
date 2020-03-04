@@ -20,6 +20,7 @@ class Textbooks extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.fetchBooks = this.fetchBooks.bind(this);
         this.sendRequest = this.sendRequest.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
     };
 
     // componentWillMount 
@@ -131,6 +132,11 @@ class Textbooks extends React.Component {
         }
     }
 
+    deleteItem = async () => {
+        // Delete item from Database
+        
+    }
+
     render() {
 
         return (
@@ -168,8 +174,14 @@ class Textbooks extends React.Component {
                                                 <p className="p">{item.book_author}</p>
                                                 <p className="p">{item.course}</p>
                                                 <p className="p">{item.loanPeriod}</p>
-                                                <p className="p" ref="owner">{item.owner}</p>
-                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                                { item.owner !== global.customAuth.email
+                                                    ? <Fragment>
+                                                        <p className="p" ref="owner">{item.owner}</p>
+                                                        <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                                      </Fragment>
+                                                    : <Button variant="danger" size="sm" onClick={() => this.deleteItem()}>Delete</Button>
+                                                }
+                                            
                                             </MDBPopoverBody>
                                         </div>
                                     </MDBPopover>

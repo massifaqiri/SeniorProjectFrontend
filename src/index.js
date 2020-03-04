@@ -8,6 +8,10 @@ import { BrowserRouter as Router } from 'react-router-dom';
 // Use this reference anytime the backend is needed
 global.backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 global.thisURL = "http://localhost:3000";
+global.selectAPI = "https://h1xqnteg60.execute-api.us-east-2.amazonaws.com/SelectProd";
+global.deleteAPI = "https://a2cisw63pb.execute-api.us-east-2.amazonaws.com/Prod";
+global.insertAPI = "https://00tyqs4c74.execute-api.us-east-2.amazonaws.com/Prod";
+global.updateAPI = "https://qa1gniaexi.execute-api.us-east-2.amazonaws.com/Prod";
 
 ReactDOM.render(
     <Router>

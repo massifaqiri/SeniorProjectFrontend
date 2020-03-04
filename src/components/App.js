@@ -48,11 +48,16 @@ const getCookie = (cname) => {
 global.customAuth = {
   isAuthenticated: (getCookie("email") !== ""),
   email: getCookie("email"),
-  authenticate(email) {
+  authenticate(email, staySignedIn) {
     this.email = email;
     // Set expires to 24 hrs by default; add 14 days based on user selection later
     let d = new Date();
-    d.setTime(d.getTime() + (24*60*60*1000));
+    let sessionLength = 24*60*60*1000;
+    if (staySignedIn) {
+      sessionLength *= 14;
+    }
+    console.log(sessionLength);
+    d.setTime(d.getTime() + sessionLength);
     document.cookie = `email=${this.email}; expires=${d.toUTCString()}; path=/;`
   },
   signout() {

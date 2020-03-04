@@ -26,6 +26,7 @@ class SignIn extends React.Component {
         console.log("verifying login")
         let email = `${this.refs.email.value}@luther.edu`;
         let password = this.refs.password.value;
+        let staySignedIn = this.refs.staySignedIn.checked;
         let hash;
         await fetch(`${global.backendURL}/query`, {
             method: "POST",
@@ -39,7 +40,7 @@ class SignIn extends React.Component {
             bcrypt.compare(password, hash, function(err, res) {
                 // res is true or false
                 if (res) {
-                    global.customAuth.authenticate(email);
+                    global.customAuth.authenticate(email, staySignedIn);
                     window.location.href = "/"; // Replace with page that was last trying to be accessed?
                 } else {
                     alert("wrong password");
@@ -90,7 +91,7 @@ class SignIn extends React.Component {
                         <Form.Group as={Row} controlId="staySignedIn">
                             {/* Option to stay signed in for 2 weeks */}
                             <Col sm={{span: 10, offset:2}}>
-                                <Form.Check type="switch" id="stay-signed-in" label="Sign in for 2 weeks"/>
+                                <Form.Check type="switch" ref="staySignedIn" label="Sign in for 2 weeks"/>
                                 </Col>
                         </Form.Group>
                         <Form.Group as={Row}>
