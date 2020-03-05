@@ -73,7 +73,10 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (
     global.customAuth.isAuthenticated
       ? <Component {...props} />
-      : <Redirect to='/signin' />
+      : <Redirect to={{
+          pathname: '/signin',
+          state: { from: props.location }
+       }} />
   )} />
 )
 
@@ -108,9 +111,9 @@ const App = () => {
             <Route path="/misc" component={Misc} />
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />
+            <Route path="/recoverpassword" component={RecoverPassword} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
-            <PrivateRoute path="/recoverpassword" component={RecoverPassword} />
           </Switch>
         </div>
         </Router>

@@ -14,7 +14,10 @@ class Textbooks extends React.Component {
         this.state = { items: [],
                        bookOptions: [],
                        showModal: false,
+                       showConfirmDelete: false,
                        API_KEY: "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M"}
+        this.handleConfirmDeleteShow = this.handleConfirmDeleteShow.bind(this);
+        this.handleConfirmDeleteClose = this.handleConfirmDeleteClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -132,6 +135,9 @@ class Textbooks extends React.Component {
         }
     }
 
+    handleConfirmDeleteShow = () => {this.setState({showConfirmDelete: true})};
+    handleConfirmDeleteClose = () => {this.setState({showConfirmDelete: false})};
+
     deleteItem = async () => {
         // Delete item from Database
         
@@ -174,14 +180,22 @@ class Textbooks extends React.Component {
                                                 <p className="p">{item.book_author}</p>
                                                 <p className="p">{item.course}</p>
                                                 <p className="p">{item.loanPeriod}</p>
-                                                { item.owner !== global.customAuth.email
-                                                    ? <Fragment>
-                                                        <p className="p" ref="owner">{item.owner}</p>
-                                                        <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
-                                                      </Fragment>
-                                                    : <Button variant="danger" size="sm" onClick={() => this.deleteItem()}>Delete</Button>
+                                                { global.customAuth.email !== "" &&
+                                                    ( item.owner !== global.customAuth.email
+                                                        ? <Fragment>
+                                                            <p className="p" ref="owner">{item.owner}</p>
+                                                            <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                                        </Fragment>
+                                                        : ( this.state.showConfirmDelete
+                                                            ? <Fragment>
+                                                                <p>Are you sure you want to delete this item?</p>
+                                                                <Button variant="outline-secondary" size="sm" onClick={() => this.handleConfirmDeleteClose}>Cancel</Button>
+                                                                <Button variant="danger" size="sm" onClick={() => this.deleteItem(item.id)}>Yes, Delete</Button>
+                                                              </Fragment>
+                                                            : <Button variant="danger" size="sm" onClick={() => this.handleConfirmDeleteShow}>Delete</Button>
+                                                            )
+                                                    )
                                                 }
-                                            
                                             </MDBPopoverBody>
                                         </div>
                                     </MDBPopover>
@@ -224,9 +238,6 @@ class Textbooks extends React.Component {
                                         </Form.Control>
                                     </Form.Group>
                                 )}
-                                {/* TODO: Auto Populate Author */}
-                                {/* TODO: Auto Populate ISBN */}
-                                {/* TODO: Auto Populate Book Image */}
                                 <Button variant="success" type="submit" onClick={this.handleSubmit}>
                                     Submit
                                 </Button>

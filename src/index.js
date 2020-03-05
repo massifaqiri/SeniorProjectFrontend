@@ -12,6 +12,13 @@ global.selectAPI = "https://h1xqnteg60.execute-api.us-east-2.amazonaws.com/Selec
 global.deleteAPI = "https://a2cisw63pb.execute-api.us-east-2.amazonaws.com/Prod";
 global.insertAPI = "https://00tyqs4c74.execute-api.us-east-2.amazonaws.com/Prod";
 global.updateAPI = "https://qa1gniaexi.execute-api.us-east-2.amazonaws.com/Prod";
+global.config = {
+    bucketName: 'campus-share-files',
+    dirName: '/',
+    region: 'us-east-2', // Ohio
+    accessKeyId: process.env.S3_accessKeyId,
+    secretAccessKey: process.env.S3_secretAccessKey,
+}
 
 ReactDOM.render(
     <Router>

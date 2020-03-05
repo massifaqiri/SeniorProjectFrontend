@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
-// import { Redirect } from 'react-router';
 import './SignIn.css';
 
 const bcrypt = require('bcryptjs');
@@ -14,7 +13,7 @@ class SignIn extends React.Component {
     }
 
     // Redirect to Home if User is Already Logged in
-    componentDidMount() {
+    componentDidMount() { 
         if (global.customAuth.isAuthenticated) {
             window.location.href = "/";
         }
@@ -23,7 +22,6 @@ class SignIn extends React.Component {
     // check email exists and password is correct
     verifyLogin = async (event) => {
         event.preventDefault(); // Page Reload
-        console.log("verifying login")
         let email = `${this.refs.email.value}@luther.edu`;
         let password = this.refs.password.value;
         let staySignedIn = this.refs.staySignedIn.checked;
@@ -43,15 +41,14 @@ class SignIn extends React.Component {
                     global.customAuth.authenticate(email, staySignedIn);
                     window.location.href = "/"; // Replace with page that was last trying to be accessed?
                 } else {
+                    // Change to invalid form
                     alert("wrong password");
                 };
             });
         } else {
+            // Change to invalid form
             alert('email does not exist');
         }
-
-        // If login is correct, then:
-        // global.customAuth.authenticate()
 
     }
 

@@ -30,7 +30,9 @@ class RecoverPassword extends React.Component {
 
     // nodemailer
     sendEmail = async () => {
-        if (this.confirmAccountExists) {
+        await this.confirmAccountExists();
+        let accountExists = this.state.accountExists;
+        if (accountExists) {
             // Send Email
             let testAccount = await nodemailer.createTestAccount();
             let transporter = nodemailer.createTransport({
@@ -61,7 +63,7 @@ class RecoverPassword extends React.Component {
         return (
             <div>
                 <p>Please enter your email to recover your password.</p>
-                <Form noValidate validated={this.state.accountExists} onSubmit={this.sendEmail}>
+                <Form onSubmit={this.sendEmail}>
                     <Form.Group as={Row} ref="email">
                         <Form.Label column sm={2}>Email</Form.Label>
                         <Col sm={10} md={10} lg={10}>

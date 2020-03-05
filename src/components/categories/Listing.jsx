@@ -1,16 +1,15 @@
 import React, { Fragment } from 'react';
-import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
+import { Button, Col, Modal, Row } from 'react-bootstrap';
+import { MDBContainer } from "mdbreact";
 
 import "./Listing.css";
 
-    // *Actual* listing component that all these others could extend?
-
 // Listing: Parent Component which Categories can inherit from
 //  props must include:
-//      categoryName
-//      categoryDesc (?)
-//      db table name -- can iterate through fields for detail box?
+//      categoryName    Name of the category page
+//      categoryDesc    Short, one-line description or quote
+//      tableName       Name of the associated table in the Database
+
 class Listing extends React.Component {
 
     // Item Listing
@@ -18,7 +17,8 @@ class Listing extends React.Component {
         super(props);
         this.state = { items: [], // to hold results from querying the DB table
                        showModal: false,
-                       showConfirmDelete: false};
+                       showConfirmDelete: false
+                     };
         this.fetchItems = this.fetchItems.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
@@ -40,6 +40,9 @@ class Listing extends React.Component {
     // Add Item Listing
     handleSubmit = () => {
         // TODO: Take values of all fields from the form and fill in a new entry in the table
+
+        // Add Upload to S3
+        
     }
 
     // Retrieve Items in current category from DB
@@ -52,7 +55,7 @@ class Listing extends React.Component {
             })
         })
         .then(response => response.json())
-        .then(data => this.setState({ items: data }));
+        .then(object => this.setState({ items: object.data }));
     }
 
     // Request Item: create new notifitaction
@@ -97,15 +100,12 @@ class Listing extends React.Component {
                         <Modal.Title>Add a new listing to the {this.props.categoryName} Category</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form onSubmit={this.handleSubmit}>
-                            {/* Iterate though fields for DB table? */}
-                            {this.props.children}
-                            <Button variant="success" type="submit">Add Listing</Button>
-                        </Form>
+                        {/* Iterate though fields for DB table? */}
+                        {this.props.form}
                     </Modal.Body>
                 </Modal>
 
-                <Modal show={this.state.showConfirmDelete} onHide={this.handleConfirmDeleteClose} animation={false} centered size="sm">
+                {/* <Modal show={this.state.showConfirmDelete} onHide={this.handleConfirmDeleteClose} animation={false} centered size="sm">
                     <Modal.Header closeButton>
                         <Modal.Title>Delete Item</Modal.Title>
                     </Modal.Header>
@@ -116,40 +116,12 @@ class Listing extends React.Component {
                             <Button variant="danger" type="submit">Yes, Delete</Button>
                         </Form>
                     </Modal.Body>
-                </Modal>
+                </Modal> */}
 
                 {/* Offerings Cards - Item Title, Image, Dates for Loan (Click for detail box & request button) */}
                 <MDBContainer>
                     <Row className="mdbpopoeverRow">
-                        { this.state.items.map(item =>
-                            <MDBPopover
-                                placement="bottom"
-                                popover
-                                clickable
-                                key={item.book_id}
-                                className="mdbpopover"
-                            >
-                                <MDBBtn className="listingBtn">
-                                    <figure className="floatLeft">
-                                        <img className="listingImg" src={item.img} alt={item.title}/>
-                                        <figcaption>{item.title}</figcaption>
-                                    </figure>
-                                </MDBBtn>
-                                <MDBPopoverHeader>{item.title}</MDBPopoverHeader>
-                                <MDBPopoverBody>
-                                    {/* Iterate through table fields here! render each as: <p className="p*>{field}</p> */}
-                                    
-                                    { item.owner !== global.customAuth.email
-                                        ? <Fragment>
-                                            <p className="p" ref="owner">{item.owner}</p>
-                                            <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
-                                            </Fragment>
-                                        : <Button variant="danger" size="sm" onClick={() => this.handleConfirmDeleteShow}>Delete</Button>
-                                    }
-
-                                </MDBPopoverBody>
-                            </MDBPopover>
-                        )}
+                        {this.props.cards}
                     </Row>
                 </MDBContainer>
             </Fragment>
