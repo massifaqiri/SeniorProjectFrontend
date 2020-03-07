@@ -12,6 +12,12 @@
   width: 100%;
 }
 
+.floatRight {
+  position: fixed;
+  right: 0;
+  top: 0;
+}
+
 .logo {
-  width: 20%;
+  width: 100%;
 }

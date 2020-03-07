@@ -7,32 +7,32 @@ class RecoverPassword extends React.Component {
     
     constructor(props) {
         super(props);
-        this.state = { accountExists: true }
+        this.state = { accountExists: false }
         this.confirmAccountExists = this.confirmAccountExists.bind(this);
     }
 
     // Reset validity of account to true on page load
     componentDidMount(){
-        this.setState({accountExists: true});
+        this.setState({accountExists: false});
     }
 
     // Query DB for email
     confirmAccountExists = async () => {
-        let response = await fetch(`${global.backendURL}/query`, {
+        await fetch(`${global.backendURL}/query`, {
             method: "POST",
             headers: { "Content-Type": "application/json"},
             body: JSON.stringify({
-                query: `SELECT * FROM Users WHERE email=${this.refs.email}@luther.edu`,
+                query: `SELECT * FROM Users WHERE email='${this.refs.email.value}@luther.edu'`,
             })
-        });
-        return response.text.length > 0;
+        }).then(response => response.json())
+        .then(data => this.setState({accountExists: data.length !== 0}))
+        .then(this.sendEmail());
     }
 
     // nodemailer
     sendEmail = async () => {
-        await this.confirmAccountExists();
-        let accountExists = this.state.accountExists;
-        if (accountExists) {
+        if (this.state.accountExists) {
+            console.log("Before sending email");
             // Send Email
             let testAccount = await nodemailer.createTestAccount();
             let transporter = nodemailer.createTransport({
@@ -54,7 +54,7 @@ class RecoverPassword extends React.Component {
             console.log(`Message sent: ${info.messageId}`);
             console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
         } else {
-            this.setState({accountExists: false});
+            alert("This account DNE");
         }
 
     }
@@ -63,12 +63,12 @@ class RecoverPassword extends React.Component {
         return (
             <div>
                 <p>Please enter your email to recover your password.</p>
-                <Form onSubmit={this.sendEmail}>
-                    <Form.Group as={Row} ref="email">
+                <Form onSubmit={this.confirmAccountExists}>
+                    <Form.Group as={Row}>
                         <Form.Label column sm={2}>Email</Form.Label>
                         <Col sm={10} md={10} lg={10}>
                             <InputGroup>
-                                <Form.Control type="text" placeholder="norsekey" required />
+                                <Form.Control type="text" ref="email" placeholder="norsekey" required />
                                     <InputGroup.Append>
                                         <InputGroup.Text id="inputGroupAppend">@luther.edu</InputGroup.Text>
                                     </InputGroup.Append>
