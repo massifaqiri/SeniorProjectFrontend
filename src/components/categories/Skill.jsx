@@ -38,14 +38,15 @@ class Skill extends React.Component {
 
     // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async (event) => {
-        let title = this.refs.skill_title;
+        let skill_title = this.refs.skill_title;
         // Check that the ref exists and title is not blank
-        if (title !== "undefined" && title.value !== '') {            
+        if (skill_title !== '') {            
             let rv = await fetch(`${backendURL}/query`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            query: `INSERT INTO Skill (skill_owner, skill_defition, car_email)`}),
+                            query: `INSERT INTO Skill (skill_title, skill_description) VALUES ("${skill_title}", "${skill_title}")`,
+                        }),
                   }).catch(error => {
                     console.error(error);
                 });
@@ -58,13 +59,13 @@ class Skill extends React.Component {
         }
     }
 
-    sendRequest = async (owner, carID) => {
+    sendRequest = async (owner, bookID) => {
         if (owner !== this.state.user.email) {
             let rv = await fetch(`${backendURL}/query`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${carID}");`,
+                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${bookID}");`,
                 })
             })
             if (rv.status !== 200) {
@@ -88,7 +89,6 @@ class Skill extends React.Component {
                 </Row>
                 <Row>
                     {typeof this.state.items !== "undefined" && (
-                        // Retry Row and Col?
                         <MDBContainer>
                             <Row className="mdbpopoverDiv">
                                 {this.state.items.map(item =>
@@ -107,7 +107,7 @@ class Skill extends React.Component {
                                         <div>
                                             <MDBPopoverHeader>{item.skill_title}</MDBPopoverHeader>
                                             <MDBPopoverBody>
-                                                <p style={{display:"none"}} ref="skillId">{item.skill_id}</p>
+                                                <p style={{display:"none"}} ref="skill_title">{item.skill_id}</p>
                                                 <p className="p" ref="owner">{item.owner}</p>
                                                 <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.skill_id)}>Request</Button>
                                             </MDBPopoverBody>
@@ -130,14 +130,14 @@ class Skill extends React.Component {
                 <Modal show={this.state.showModal} onHide={this.handleModalClose}>
                     <Modal.Header closeButton>
                         {/* Change to Dropdown of possible listing categories? */}
-                        <Modal.Title>Add a listing to {this.props.sectionTitle}</Modal.Title>
+                        <Modal.Title>Add a listing to Skills</Modal.Title>
                         <Modal.Body>
                             <Form onSubmit={this.handleSubmit}>
                                 {/* Refactor for generic listing (not just Textbooks) */}
                                 <Form.Label>Owner</Form.Label>
-                                <Form.Control type="text" ref="skill_owner" placeholder="Enter Name" />
-                                <Form.Label>Definition of Skill</Form.Label>
-                                <Form.Control type="text" ref="skill_definition" placeholder="Description Here" />
+                                <Form.Control type="text" ref="skill_title" placeholder="Enter Name" />
+                                <Form.Label>Description of Skill</Form.Label>
+                                <Form.Control type="text" ref="skill_description" placeholder="Description Here" />
                                 <Button variant="success" type="submit" onClick={this.handleSubmit}>
                                     Submit
                                 </Button>

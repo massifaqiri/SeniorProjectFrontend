@@ -24,6 +24,8 @@ import RecoverPassword from "./RecoverPassword";
 // Category Pages
 import Textbooks from "./categories/Textbooks";
 import Misc from "./categories/Misc";
+import Skill from "./categories/Skill";
+import Transport from "./categories/Transport";
 
 // Bootstrap Imports
 import { Navbar } from 'react-bootstrap';
@@ -104,6 +106,8 @@ const App = () => {
               <Textbooks sectionTitle="Textbooks" className="listing" />
             </Route>
             <Route path="/misc" component={Misc} />
+            <Route path="/skill" component={Skill} />
+            <Route path="/transport" component={Transport} />
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />
             {/* Private Pages */}

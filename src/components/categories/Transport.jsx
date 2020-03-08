@@ -38,14 +38,15 @@ class Transport extends React.Component {
 
     // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async (event) => {
-        let title = this.refs.car_title;
+        let car_title = this.refs.car_title;
         // Check that the ref exists and title is not blank
-        if (title !== "undefined" && title.value !== '') {            
+        if (car_title !== "undefined" && car_title.value !== '') {
             let rv = await fetch(`${backendURL}/query`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            query: `INSERT INTO Transport (car_owner, car_make, car_model, car_destination, car_time, car_email)`}),
+                            query: `INSERT INTO Transport (car_title, car_make, car_model, car_destination, car_time) VALUES ("${car_title}", "${car_title}", "${car_title}, "${car_title}", "${car_title}")`,
+                        }),
                   }).catch(error => {
                     console.error(error);
                 });
@@ -58,13 +59,13 @@ class Transport extends React.Component {
         }
     }
 
-    sendRequest = async (owner, carID) => {
+    sendRequest = async (owner, bookID) => {
         if (owner !== this.state.user.email) {
             let rv = await fetch(`${backendURL}/query`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
-                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${carID}");`,
+                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${bookID}");`,
                 })
             })
             if (rv.status !== 200) {
@@ -96,20 +97,20 @@ class Transport extends React.Component {
                                         placement="bottom"
                                         popover
                                         clickable
-                                        key={item.ride_id}
+                                        key={item.car_id}
                                         className="mdbpopover"
                                     >
-                                        <MDBBtn className="rideBtn">
+                                        <MDBBtn className="carBtn">
                                             <figure className="floatLeft">
-                                                <figcaption>{item.ride_title}</figcaption>
+                                                <figcaption>{item.car_title}</figcaption>
                                             </figure>
                                         </MDBBtn>
                                         <div>
-                                            <MDBPopoverHeader>{item.ride_title}</MDBPopoverHeader>
+                                            <MDBPopoverHeader>{item.car_title}</MDBPopoverHeader>
                                             <MDBPopoverBody>
-                                                <p style={{display:"none"}} ref="rideId">{item.ride_id}</p>
+                                                <p style={{display:"none"}} ref="car_id">{item.car_id}</p>
                                                 <p className="p" ref="owner">{item.owner}</p>
-                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.ride_id)}>Request</Button>
+                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.car_id)}>Request</Button>
                                             </MDBPopoverBody>
                                         </div>
                                     </MDBPopover>
@@ -130,14 +131,16 @@ class Transport extends React.Component {
                 <Modal show={this.state.showModal} onHide={this.handleModalClose}>
                     <Modal.Header closeButton>
                         {/* Change to Dropdown of possible listing categories? */}
-                        <Modal.Title>Add a listing to {this.props.sectionTitle}</Modal.Title>
+                        <Modal.Title>Add a listing to Transportation</Modal.Title>
                         <Modal.Body>
                             <Form onSubmit={this.handleSubmit}>
                                 {/* Refactor for generic listing (not just Textbooks) */}
                                 <Form.Label>Owner</Form.Label>
                                 <Form.Control type="text" ref="car_owner" placeholder="Enter Owner" />
-                                <Form.Label>Make and Model</Form.Label>
-                                <Form.Control type="text" ref="car_make,car_model" placeholder="Enter Make and Model" />
+                                <Form.Label>Make of Car</Form.Label>
+                                <Form.Control type="text" ref="car_make" placeholder="Enter Make" />
+                                <Form.Label>Model of Car</Form.Label>
+                                <Form.Control type="text" ref="car_model" placeholder="Enter Model" />
                                 <Form.Label>Where to</Form.Label>
                                 <Form.Control type="text" ref="car_desintation" placeholder="Enter Destination" />
                                 <Form.Label>When</Form.Label>
