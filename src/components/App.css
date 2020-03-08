@@ -29,8 +29,11 @@
 }
 
 .footerMessage {
+  position: fixed;
+  left: 0%;
+  bottom: 0%;
+  margin-bottom: 0%;
+  width: 100%;
+  background-color: #F4F4F4;
   text-align: center;
-  size: 1px;
-  position: relative;
-  bottom: 0;
 }

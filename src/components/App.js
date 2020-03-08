@@ -27,6 +27,7 @@ import Textbooks from "./categories/Textbooks";
 import Misc from "./categories/Misc";
 import LostAndFound from "./categories/LostAndFound";
 import Listing from "./categories/Listing";
+import ResetPassword from './ResetPassword';
 
 // console.log(process.env);
 
@@ -115,6 +116,8 @@ const App = () => {
             <Route path="/createaccount" component={CreateAccount} />
             {/* Keep a logged-in user from accessing? */}
             <Route path="/recoverpassword" component={RecoverPassword} />
+            {/* Reset Password -- not logged in, but need a JSON Web Token to access */}
+            <Route path="/resetpassword/:email/:token" component={ResetPassword} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
           </Switch>
