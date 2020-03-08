@@ -28,7 +28,7 @@ import Misc from "./categories/Misc";
 import LostAndFound from "./categories/LostAndFound";
 import Listing from "./categories/Listing";
 
-console.log(process.env);
+// console.log(process.env);
 
 const getCookie = (cname) => {
   let name = cname + "=";
@@ -113,6 +113,7 @@ const App = () => {
             <Route path="/misc" component={Misc} />
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />
+            {/* Keep a logged-in user from accessing? */}
             <Route path="/recoverpassword" component={RecoverPassword} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />

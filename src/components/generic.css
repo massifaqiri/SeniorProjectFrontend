@@ -1,0 +1,11 @@
+.errorMsg {
+    color: red;
+    border-color: red;
+    text-align: left;
+}
+
+.successMsg {
+    color: green;
+    border-color: green;
+    text-align: left;
+}
