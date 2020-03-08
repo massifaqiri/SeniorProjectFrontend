@@ -56,3 +56,19 @@ h1 {
     font-style: italic;
     font-size: small;
 }
+
+.invisible {
+    display: none;
+}
+
+.btn-leading {
+    color: white;
+    background-color: #373737;
+    border-top-right-radius: 0%;
+    border-bottom-right-radius: 0%;
+}
+
+.btn-leading:hover {
+    color: white;
+    background-color: #0080fe;
+}

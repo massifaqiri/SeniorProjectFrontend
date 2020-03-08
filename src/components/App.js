@@ -28,6 +28,8 @@ import Misc from "./categories/Misc";
 import LostAndFound from "./categories/LostAndFound";
 import Listing from "./categories/Listing";
 
+console.log(process.env);
+
 const getCookie = (cname) => {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
