@@ -52,6 +52,9 @@ Contact us with any questions, comments, concerns, or feedback!
 
 ## Backend APIs for Database (CRUD) Operations
 
+### API Key for the following APIs (please strictly avoid sharing it)
+`dKEhYInqF09xERGUZcQQ3aCKELroAbsk1vVZLhb3`
+
 ### 'Select' API
 
 * **Purpose:** This API serves the 'Select' operations on the database. 
