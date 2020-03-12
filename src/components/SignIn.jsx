@@ -5,7 +5,6 @@ import './SignIn.css';
 
 const bcrypt = require('bcryptjs');
 
-
 class SignIn extends React.Component {
 
     constructor(props){

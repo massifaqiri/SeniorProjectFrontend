@@ -14,7 +14,13 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        fetch('https://h1xqnteg60.execute-api.us-east-2.amazonaws.com/SelectProd?table=Textbooks&field=book_author')
+        let url = 'https://h1xqnteg60.execute-api.us-east-2.amazonaws.com/SelectProd?table=Textbooks&field=book_author';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': 'dKEhYInqF09xERGUZcQQ3aCKELroAbsk1vVZLhb3',
+            }
+        })
         .then(res => res.json())
         .then(json => {
             this.setState({
