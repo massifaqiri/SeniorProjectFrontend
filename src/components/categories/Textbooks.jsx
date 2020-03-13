@@ -26,17 +26,22 @@ class Textbooks extends React.Component {
         this.deleteItem = this.deleteItem.bind(this);
     };
 
-    // componentWillMount 
-
-    componentDidMount = async () => {
+    componentDidMount() {
         this.fetchBooks();
     };
 
     // fetchBooks: retrieves current listings from Textbooks table
     fetchBooks = async() => {
-        await fetch(`${global.backendURL}/querytextbooks`)
+        let url = `${global.selectAPI}table=Textbooks&field=*`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
         .then(response => response.json())
-        .then(data => this.setState({ items: data }));
+        .then(json => this.setState({ items: json }))
+        .catch(err => alert(err));
     };
 
     // fetchVolumeInfo: on selection of author, populate ISBN & Photo about that volume
@@ -92,15 +97,17 @@ class Textbooks extends React.Component {
 
             // TODO: auto-populate author & ISBN, and grab photo from Google Books API
             // I think we need this to be an async function so we wait for the Promise to see if the data was saved properly.
-            let rv = await fetch(`${global.backendURL}/query`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}")`,
-                        }),
-                  }).catch(error => {
-                    console.error(error);
-                });
+            // let rv = await fetch(`${global.backendURL}/query`, {
+            //             method: "POST",
+            //             headers: { "Content-Type": "application/json" },
+            //             body: JSON.stringify({
+            //                 query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}")`,
+            //             }),
+            //       }).catch(error => {
+            //         console.error(error);
+            //     });
+            let rv = await fetch(`${global.insertAPI}table=Textbooks&field=book_title, book_author, book_isbn, owner, book_image&value="${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}"`)
+                .catch(err => console.log(err));
             // Change this to alert user if their form was NOT submitted properly.
             if (rv.status !== 200) {
                 alert("Uff da! Something went wrong, please try again.")

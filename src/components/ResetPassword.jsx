@@ -36,7 +36,13 @@ class ResetPassword extends React.Component {
     }
 
     getSecret = async () => {
-        await fetch(`${global.selectAPI}table=Users&field=*&condition=email='${this.state.userEmail}'`)
+        await fetch(`${global.selectAPI}table=Users&field=*&condition=email='${this.state.userEmail}'`, {
+            method: 'GET',
+            headers: {
+                'Access-Control-Allow-Origin': true,
+                'x-api-key': global.APIkey,
+            }
+        })
         .then(response => response.json())
         .then(object => this.setState({secret: object[0].resetPasswordSecret, hashedPassword: object[0].password}))
         .catch(err => this.setState({serverErrorMsg: err.text}));

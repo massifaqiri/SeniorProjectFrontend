@@ -16,33 +16,57 @@ class RecoverPassword extends React.Component {
                        emailSent: false,
                        hashedPassword: '',
                        serverErrorMsg: '',
+                       userEmail: '',
                        userErrorMsg: ''}
         this.confirmAccountExists = this.confirmAccountExists.bind(this);
     }
 
+    // Try making button a seperate component to load
+
     // Reset states on page reload
     componentDidMount(){
+        // console.log(this.state.userEmail);
+        // if (this.state.userEmail !== '') {
+        //     let url = `${global.selectAPI}table=Users&field=*&condition=email='${this.state.userEmail}'`
+        //     fetch(url, {
+        //         method: 'GET',
+        //         headers: {
+        //             'x-api-key': process.env.REACT_APP_API_KEY,
+        //         }
+        //     })
+        //     .then(response => response.json())
+        //     .then(object => this.setState({accountExists: (object.length > 0), hashedPassword: object[0].password}))
+        //     .catch(err => this.setState({serverErrorMsg: err.message}));
+        //     this.sendEmail(this.state.email);
+        // }
         this.setState({accountExists: false, emailSent: false, hashedPassword: '', serverErrorMsg: '', userErrorMsg: ''});
     }
 
     // Query DB for email
-    confirmAccountExists = async () => {
+    confirmAccountExists = event => {
         let norsekey = this.refs.email.value;
         if (norsekey === "") {
             this.setState({errorMessage: "Norsekey is missing."})
         } else {
             let email = `${norsekey}@luther.edu`;
-            await fetch(`${global.backendURL}/query`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({
-                    query: `SELECT * FROM Users WHERE email='${email}'`,
-                })
-            }).then(response => response.json())
-            .then(object => this.setState({accountExists: (object.data.length > 0), hashedPassword: object.data.password}));
+            fetch(`${global.selectAPI}table=Users&field=*&condition=email='${email}'`, {
+                method: 'GET',
+                // mode: 'no-cors',
+                headers: {
+                    'Access-Control-Allow-Origin': "http://localhost:3000",
+                    'x-api-key': process.env.REACT_APP_API_KEY,
+                }
+            })
+            .then(response => response.json())
+            .then(object => this.setState({accountExists: (object.length > 0), hashedPassword: object[0].password}))
+            .catch(err => this.setState({serverErrorMsg: err.message}));
             this.sendEmail(email);
         }
     }
+
+    // confirmAccountExists = event => {
+    //     this.setState({userEmail: this.refs.email.value});
+    // }
 
     // emailjs-com & jwt-simple
     sendEmail = async (email) => {
@@ -50,7 +74,6 @@ class RecoverPassword extends React.Component {
             // Payload is NOT secure -- do not store password or JWT here!
             let payload = { userEmail: email }
             let d = new Date();
-
             // Secret IS secure
             let secret = `${this.state.hashedPassword}-${d.getTime()}`;
             // Save secret to database for retrieval in ResetPassword
@@ -93,6 +116,7 @@ class RecoverPassword extends React.Component {
                                         <InputGroup.Text id="inputGroupAppend">@luther.edu</InputGroup.Text>
                                     </InputGroup.Append>
                             </InputGroup>
+
                             {this.state.userErrorMsg !== '' && (
                                 <InputGroup>
                                     <Form.Control type="text" className="errorMsg" readOnly defaultValue={this.state.userErrorMsg}/>

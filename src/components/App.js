@@ -29,6 +29,7 @@ import LostAndFound from "./categories/LostAndFound";
 import Listing from "./categories/Listing";
 import ResetPassword from './ResetPassword';
 
+import Backdoor from "./Bcrypt_Backdoor";
 // console.log(process.env);
 
 const getCookie = (cname) => {
@@ -120,6 +121,7 @@ const App = () => {
             <Route path="/resetpassword/:email/:token" component={ResetPassword} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
+            <Route path="/backdoor" component={Backdoor} />
           </Switch>
         </div>
         </Router>
