@@ -45,7 +45,7 @@ const NavBar = () => {
                                     <Nav className="mr-auto">
                                         <Nav.Item><Nav.Link href="/">Home</Nav.Link></Nav.Item>
                                         <Nav.Item><Nav.Link href="/about">About</Nav.Link></Nav.Item>
-                                        <Nav.Item><Nav.Link>How does it work</Nav.Link></Nav.Item>
+                                        <Nav.Item><Nav.Link disabled >How does it work</Nav.Link></Nav.Item>
                                         <Nav.Item><Nav.Link href="/categories">Categories</Nav.Link></Nav.Item>
                                     </Nav>
                                     <Nav className="justify-content-end">

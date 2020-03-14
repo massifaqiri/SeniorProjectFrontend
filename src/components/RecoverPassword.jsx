@@ -19,9 +19,12 @@ class RecoverPassword extends React.Component {
                        userEmail: '',
                        userErrorMsg: ''}
         this.confirmAccountExists = this.confirmAccountExists.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    // Try making button a seperate component to load
+    handleChange(event) {
+        this.setState({userEmail: event.target.value.toLowerCase()});
+    }
 
     // Reset states on page reload
     componentDidMount(){
@@ -43,19 +46,15 @@ class RecoverPassword extends React.Component {
     }
 
     // Query DB for email
-    confirmAccountExists = event => {
+    confirmAccountExists = async (event) => {
         let norsekey = this.refs.email.value;
         if (norsekey === "") {
             this.setState({errorMessage: "Norsekey is missing."})
         } else {
             let email = `${norsekey}@luther.edu`;
-            fetch(`${global.selectAPI}table=Users&field=*&condition=email='${email}'`, {
+            await fetch(`${global.selectAPI}table=Users&field=*&condition=email='${email}'`, {
                 method: 'GET',
-                // mode: 'no-cors',
-                headers: {
-                    'Access-Control-Allow-Origin': "http://localhost:3000",
-                    'x-api-key': process.env.REACT_APP_API_KEY,
-                }
+                headers: {'x-api-key': process.env.REACT_APP_API_KEY}
             })
             .then(response => response.json())
             .then(object => this.setState({accountExists: (object.length > 0), hashedPassword: object[0].password}))
@@ -111,7 +110,7 @@ class RecoverPassword extends React.Component {
                         <Form.Label column xs={12} sm={12} md={1} lg={1} xl={1}>Email</Form.Label>
                         <Col sm={6} md={6} lg={6}>
                             <InputGroup>
-                                <Form.Control type="text" ref="email" placeholder="norsekey" required />
+                                <Form.Control type="text" ref="email" value={this.state.userEmail} onChange={this.handleChange} placeholder="norsekey" required />
                                     <InputGroup.Append>
                                         <InputGroup.Text id="inputGroupAppend">@luther.edu</InputGroup.Text>
                                     </InputGroup.Append>

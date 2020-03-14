@@ -7,16 +7,35 @@ import { uploadFile } from 'react-s3';
 // Style
 import './Listing.css';
 
+const config = {
+    bucketName: 'campus-share-files',
+    dirName: 'LostAndFound',
+    region: 'us-east-2', // Ohio
+    accessKeyId: process.env.REACT_APP_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_S3_SECRET_ACCESS_KEY,
+};
+
 class LostAndFound extends React.Component {
     // How does inheriting/changing functions work in Composition?
     // Just provide things through props sent to Listing below?
     // For database & table fields, can I pass in another component/class?
 
-    handleSubmit = async () => {
+    constructor(props) {
+        super(props);
+        this.state = {file: null,
+                      fileURL: null};
+
+    }
+
+    handleImageUpload = (event) => {this.setState({file:event.target.files[0], fileURL: URL.createObjectURL(event.target.files[0])})}
+
+    // async with await or nah?
+    handleSubmit = () => {
         // Upload to S3
-        let image = this.refs.image.files[0];
-        console.log(image);
-        await uploadFile(image, global.config)
+        let image = this.state.file;
+        // console.log(image);
+        // console.log(config);
+        uploadFile(image, config)
         .then(data => console.log(data))
         .catch(err => console.error(`ERROR: ${err}`))
 
@@ -66,15 +85,17 @@ class LostAndFound extends React.Component {
                                     </label>
                                 </div>
                             </div> */}
+                            <input type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png" />
+                            {this.state.fileURL !== null && (<img src={this.state.fileURL} alt="" className="uploadPreview"/>)}
 
-                            <div className="input-group form-group">
+                            {/* <div className="input-group form-group">
                                 <label className="input-group-btn">
                                     <span className="btn btn-leading">
                                         Add Photo <Form.Control as="input" type="file" className="invisible" multiple />
                                     </span>
                                 </label>
                                 <Form.Control as="input" type="text" className="form-control" defaultValue="No file selected" readOnly />
-                            </div>
+                            </div> */}
                             <Row className="bottomRow">
                                 {/* <Col xs={4} sm={3} md={2} lg={2} xl={2}>
                                     <label className="btn btn-default btn-file">

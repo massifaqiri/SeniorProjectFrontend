@@ -9,6 +9,7 @@ class SignIn extends React.Component {
 
     constructor(props){
         super(props);
+        this.state = {errMsg: ""}
         this.verifyLogin = this.verifyLogin.bind(this);
     }
 
@@ -25,31 +26,27 @@ class SignIn extends React.Component {
         let email = `${this.refs.email.value}@luther.edu`;
         let password = this.refs.password.value;
         let staySignedIn = this.refs.staySignedIn.checked;
-        let hash;
-        await fetch(`${global.backendURL}/query`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json"},
-            body: JSON.stringify({
-                query: `SELECT password FROM Users WHERE email='${email}'`,
-            })
+        let result;
+        await fetch(`${global.selectAPI}table=Users&field=password&condition=email='${email}'`, {
+            method: "GET",
+            headers: { "x-api-key": process.env.REACT_APP_API_KEY},
         }).then(response => response.json()
-        .then(response => hash = response.data[0].password));
-        if (typeof hash !== "undefined") {
+        .then(response => result = response));
+        if (result.length > 0) {
+            let hash = result[0].password;
             bcrypt.compare(password, hash, function(err, res) {
                 // res is true or false
                 if (res) {
                     global.customAuth.authenticate(email, staySignedIn);
                     window.location.href = "/"; // Replace with page that was last trying to be accessed?
-                } else {
-                    // Change to invalid form
-                    alert("wrong password");
-                };
+                }
             });
+            // If Window has not redirected in quarter of a second, password was incorrect
+            setTimeout(() => { this.setState({errMsg: "Incorrect Password"}); }, 250);
         } else {
-            // Change to invalid form
-            alert('email does not exist');
+            // Alert User that Email was not found in the Database
+            this.setState({errMsg: "No account exists with that email."})
         }
-
     }
 
     // Render Form to take username & password
@@ -79,6 +76,7 @@ class SignIn extends React.Component {
                                 <Form.Control type="password" ref="password" placeholder="Password" />
                             </Col>
                         </Form.Group>
+                        <p>{this.state.errMsg}</p>
                         <Form.Group as={Row}>
                             {/* Option for Resetting Password --> will need email functionality! */}
                             <Col sm={{span: 10, offset:2}}>

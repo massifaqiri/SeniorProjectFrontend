@@ -72,3 +72,7 @@ h1 {
     color: white;
     background-color: #0080fe;
 }
+
+.uploadPreview {
+    width: 100%;
+}
