@@ -29,6 +29,18 @@ class LostAndFound extends React.Component {
 
     }
 
+    // Testing insertAPI
+    // componentDidMount = async () => {
+    //     await fetch(`${global.insertAPI}table=LostAndFound&field=item_name,datetime_found,location_found,item_img,discoverer&value='Orphaned Duck',2020-03-15 16:00:00,'Lindemon Pond','https://campus-share-files.s3.us-east-2.amazonaws.com/LostAndFound/orphanedDuck.jpg','${global.customAuth.email}'`, {
+    //         method: 'GET',
+    //         headers: {
+    //             'x-api-key': process.env.REACT_APP_API_KEY,
+    //         }
+    //     })
+    //     .then(response => console.log(response))
+    //     .catch(err => console.log(err));
+    // }
+
     handleImageUpload = (event) => {
         if (event.target.files.length > 0) {
             this.setState({file:event.target.files[0], fileURL: URL.createObjectURL(event.target.files[0])})
@@ -77,10 +89,6 @@ class LostAndFound extends React.Component {
                 })
                 .then(response => console.log(response))
                 .catch(err => console.log(err));
-        // await fetch(`${global.backendURL}/query`, {
-        //     method: 'POST',
-        //     body: `INSERT INTO LostAndFound (item_name, datetime_found, location_found, item_img) VALUES ('${item_name}', ${datetime_found}, '${location_found}', '${item_img}', '${global.customAuth.email}')`
-        // })
     }
 
     render() {

@@ -83,7 +83,7 @@ class Misc extends React.Component {
     
             if (!this.state.errMsg) {
                 // Save to DB
-                await this.saveToDB(item_name, item_desc, item_img, loan_start, loan_end);
+                await this.saveToDB(item_name, item_desc, this.state.fileLocation, loan_start, loan_end);
                 
                 // Lastly, close the modal
                 this.handleModalClose();
@@ -92,7 +92,7 @@ class Misc extends React.Component {
     }
 
     saveToDB = async(item_name, item_desc, item_img, loan_start, loan_end) => {
-        let url = `${global.insertAPI}table=Misc&field=item_name, item_desc, item_img, loan_start, loan_end, owner&value='${item_name}', '${item_desc}', '${item_img}', ${loan_start}, ${loan_end}, '${global.customAuth.email}'`;
+        let url = `${global.insertAPI}table=Misc&field=item_name,item_desc,item_img,loan_start,loan_end,owner&value='${item_name}','${item_desc}','${item_img}','${loan_start}','${loan_end}','${global.customAuth.email}'`;
         await fetch(url, {
                     method: 'GET',
                     headers: {

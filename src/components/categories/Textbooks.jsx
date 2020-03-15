@@ -26,12 +26,12 @@ class Textbooks extends React.Component {
         this.deleteItem = this.deleteItem.bind(this);
     };
 
-    componentDidMount() {
-        this.fetchBooks();
+    componentDidMount = async () => {
+        await this.fetchBooks();
     };
 
     // fetchBooks: retrieves current listings from Textbooks table
-    fetchBooks = async() => {
+    fetchBooks = async () => {
         let url = `${global.selectAPI}table=Textbooks&field=*`;
         fetch(url, {
             method: 'GET',
@@ -66,6 +66,7 @@ class Textbooks extends React.Component {
     // handleModalClose: closes the Add Listing Modal on button click
     handleModalClose = () => {
         this.setState({showModal: false});
+        this.fetchBooks();
     };
 
     // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
@@ -112,11 +113,11 @@ class Textbooks extends React.Component {
             if (rv.status !== 200) {
                 alert("Uff da! Something went wrong, please try again.")
             } 
-            // else {
-            //     // Response was status 200 - OK  (Data was successfully saved)  
-            //     this.handleModalClose();
-            //     this.fetchBooks();
-            // }
+            else {
+                // Response was status 200 - OK  (Data was successfully saved)  
+                this.handleModalClose();
+                this.fetchBooks();
+            }
         } else {
             alert('Please provide a valid title.')
         }
