@@ -37,13 +37,9 @@ class Home extends React.Component {
                     <a href="/signin"><Button variant="success">Sign In</Button></a>
                     <a href="/createaccount"><Button variant="secondary">Create Account</Button></a>
                 </div>
-                <ul>
-                    {this.state.exampleAPICallData.map(item => (
-                        <li>
-                            {item.book_author}
-                        </li>
-                    ))}
-                </ul>
+                <div className="text-center">
+                    <a href="/categories">Continue as guest</a>
+                </div>
             </div>
         );
     }

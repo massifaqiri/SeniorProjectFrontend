@@ -12,11 +12,6 @@
   font-size: calc(5px + 2vmin);
 }
 
-/* Have to set background color as the same as App, or the content overlaps */
-.App-navBar{
-  background-color: #F4F4F4;
-}
-
 .In-line-elements {
   align-content: left;
 }
@@ -24,10 +19,6 @@
 .listing {
   width: 95%;
   background-color: black;
-}
-
-.logo {
-  width: 20%;
 }
 
 .element {
@@ -38,8 +29,11 @@
 }
 
 .footerMessage {
+  position: fixed;
+  left: 0%;
+  bottom: 0%;
+  margin-bottom: 0%;
+  width: 100%;
+  background-color: #F4F4F4;
   text-align: center;
-  size: 1px;
-  position: relative;
-  bottom: 0;
 }

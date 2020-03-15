@@ -1,181 +1,236 @@
 import React, { Fragment } from 'react';
-import { Button, Col, Form, InputGroup, Row, Modal, Spinner } from 'react-bootstrap';
-import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
+import { Button, Col, Form, InputGroup, Modal, Row, Spinner } from 'react-bootstrap';
+import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn } from "mdbreact";
+import S3FileUpload from 'react-s3';
 
 import './Listing.css';
+
+const config = {
+    bucketName: 'campus-share-files',
+    dirName: 'Misc',
+    region: 'us-east-2', // Ohio
+    accessKeyId: process.env.REACT_APP_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_S3_SECRET_ACCESS_KEY,
+};
 
 class Misc extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { items: [],
-                       bookOptions: [],
-                       showModal: false,
-                       API_KEY: "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M"}
-        this.handleModalShow = this.handleModalShow.bind(this);
-        this.handleModalClose = this.handleModalClose.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+        this.state = { errMsg: null,
+                       file: null,
+                       fileLocation: null,
+                       fileURL: null,
+                       items: null,
+                       showModal: false}
         this.fetchItems = this.fetchItems.bind(this);
-        this.sendRequest = this.sendRequest.bind(this);
+        this.handleModalClose = this.handleModalClose.bind(this);
+        this.handleModalShow = this.handleModalShow.bind(this);
+        // this.deleteItem = this.deleteItem.bind(this);
+        // this.handleSubmit = this.handleSubmit.bind(this);
+        // this.sendRequest = this.sendRequest.bind(this);
     };
 
-    componentDidMount = async () => {this.fetchItems()};
+    componentDidMount(){this.fetchItems();}
+
+    deleteItem = async (item_id) => {
+        await fetch(`${global.deleteAPI}table=Misc&condition=item_id=${item_id}`, {
+                method: 'GET',
+                headers: {
+                    'x-api-key': process.env.REACT_APP_API_KEY,
+                }
+            })
+            .then(response => response.json())
+            .catch(err => console.log(err));
+        this.fetchItems();
+    };
 
     // fetchItems: retrieves current listings from Misc table
-    fetchItems = async() => {
-        await fetch(`${global.backendURL}/query`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json"},
-            body: JSON.stringify({
-                query: `SELECT * FROM Misc WHERE owner!=${global.customAuth.email}`
-            })
+    fetchItems = async () => {
+        await fetch(`${global.selectAPI}table=Misc&field=*`, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }
         })
         .then(response => response.json())
-        .then(response => console.log(response));
+        .then(object => this.setState({ items: object }));
     };
 
-    // handleModalShow: shows the Add Listing Modal on button click 
+    handleImageUpload = (event) => {
+        if (event.target.files.length > 0) {
+            this.setState({file:event.target.files[0], fileURL: URL.createObjectURL(event.target.files[0])})
+        }
+    }
+
+    // Modal Functions
+    handleModalClose = () => {this.setState({showModal: false, file: null})};
     handleModalShow = () => {this.setState({showModal: true})};
-
-    // handleModalClose: closes the Add Listing Modal on button click
-    handleModalClose = () => {this.setState({showModal: false});};
-
-    // handleSubmit: sends info about new listing from Add Listing Modal to DB
-    handleSubmit = async (event) => {
+    
+    handleSubmit = async () => {
         let item_name = this.refs.item_name.value;
-        if (item_name !== '') {
-            let item_desc = this.refs.item_desc.value;
-            let imgURL = "";
-            let loan_deadline = this.refs.loan_deadline.value;
-            let rv = await fetch(`${global.backendURL}/query`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            query: `INSERT INTO Misc (item_name, item_desc, item_img, item_loan_deadline) VALUES ("${item_name}", "${item_desc}", "${imgURL}", "${loan_deadline}")`,
-                        }),
-                  }).catch(error => {
-                    console.error(error);
-                });
-            // Change this to alert user if their form was NOT submitted properly.
-            if (rv.status !== 200) {
-                alert("Uff da! Something went wrong, please try again.")
-            } 
-            else {
-                // Response was status 200 - OK  (Data was successfully saved)  
+        let item_desc = this.refs.item_desc.value;
+        let item_img = this.state.fileURL;
+        let loan_start = this.refs.loan_start.value;
+        let loan_end = this.refs.loan_end.value;
+        if (!item_name) {
+            this.setState({errMsg: "Please provide a name for this item"});
+        } else if (!item_desc) {
+            this.setState({errMsg: "Please provide a description for this item"});
+        } else if (!item_img) {
+            this.setState({errMsg: "Please provide an image for this item"});
+        } else if (!loan_start) {
+            this.setState({errMsg: "Please provide a loan start for this item"});
+        } else if (loan_end && (loan_end < loan_start)) {
+            this.setState({errMsg: "Please provide a valid loan end (currently set to before start)"});
+        } else {
+            this.setState({errMsg: null});
+            // Upload to S3
+            await this.uploadToS3();
+    
+            if (!this.state.errMsg) {
+                // Save to DB
+                await this.saveToDB(item_name, item_desc, this.state.fileLocation, loan_start, loan_end);
+                
+                // Update View of Item Listings
+                this.fetchItems();
+
+                // Lastly, close the modal
                 this.handleModalClose();
             }
-        } else {
-            alert('Please provide a name for your offering.')
         }
     }
 
-    sendRequest = async (owner, bookID) => {
-        if (owner !== global.customAuth.email) {
-            let rv = await fetch(`${global.backendURL}/query`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({
-                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${global.customAuth.email}", "${owner}", "${bookID}");`,
+    saveToDB = async(item_name, item_desc, item_img, loan_start, loan_end) => {
+        let url = `${global.insertAPI}table=Misc&field=item_name,item_desc,item_img,loan_start,loan_end,owner&value='${item_name}','${item_desc}','${item_img}','${loan_start}','${loan_end}','${global.customAuth.email}'`;
+        await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'x-api-key': process.env.REACT_APP_API_KEY,
+                    }
                 })
-            })
-            if (rv.status !== 200) {
-                alert("Uff da! Something went wrong, please try again.");
-            } else {
-                alert("Request successfully sent!")
-            }
-            console.log(rv);
-        } else {
-            alert("You are the owner of this title. Please look for another title.")
-        }
+                .then(response => console.log(response))
+                .catch(err => console.log(err));
     }
+
+    uploadToS3 = async () => {
+        await S3FileUpload.uploadFile(this.state.file, config)
+        .then(data => this.setState({fileLocation: data.location}))
+        .catch(err => this.setState({errMsg: err}));
+    }
+
+
+    // sendRequest -> needs ID of item & source table
 
     // Render Page
     render() {
-
         return (
             <Fragment>
                 <Row>
-                    <h1 className="sectionTitle">Misc Page</h1>
-                    {global.customAuth.isAuthenticated && (
-                        <Button onClick={this.handleModalShow}>Add Listing</Button>
-                    )}
+                    <Col xs={8} sm={8} md={10} lg={10} xl={10}>
+                        <h1 className="categoryName">Misc</h1>
+                    </Col>
+                    <Col className="justify-content-md-end">
+                        {/* Add Listing Button - Only shown if current user is logged in */}
+                        { global.customAuth.isAuthenticated && (
+                            <Button onClick={this.handleModalShow}>Add Listing</Button>
+                            )}
+                    </Col>
                 </Row>
-                <p className="sectionDesc">The Island of Misfit Toys, CampusShare-style</p>
-                <Row>
-                    {typeof this.state.items !== "undefined" && (
-                        <MDBContainer>
-                            <Row className="mdbpopoverDiv">
-                                {this.state.items.map(item =>
+                <p className="categoryDesc">mi-sə-ˈlā-nē-əs: consisting of many things of different sorts</p>
+        
+                {!this.state.items
+                // No items have been fetched yet
+                ? (
+                    <Row>
+                        <Spinner animation="grow" size="sm" />
+                        <p>Loading...</p>
+                    </Row>
+                )
+                : (
+                    <Fragment>
+                        {this.state.items.length === 0
+                         ? // No items exist
+                            (<p>No items to display!</p>)
+                         : // Render Items
+                            <Fragment>
+                                {this.state.items.map(item => 
                                     <MDBPopover
-                                        placement="bottom"
-                                        popover
-                                        clickable
-                                        key={item.item_name}
-                                        className="mdbpopover"
-                                    >
-                                        <MDBBtn className="listingBtn">
-                                            <figure className="floatLeft">
-                                                <img className="listingImg" src={item.item_img||"https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png"} alt={item.book_title}/>
-                                                <figcaption>{item.item_name}</figcaption>
-                                            </figure>
-                                        </MDBBtn>
-                                        <div>
-                                            <MDBPopoverHeader>{item.item_name}</MDBPopoverHeader>
-                                            <MDBPopoverBody>
-                                                <p style={{display:"none"}} ref="itemID">{item.item_id}</p>
-                                                <p className="p">{item.item_desc}</p>
-                                                <p className="p">{item.loan_period}</p>
-                                                <p className="p" ref="owner">{item.owner}</p>
-                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.item_id)}>Request</Button>
-                                            </MDBPopoverBody>
-                                        </div>
-                                    </MDBPopover>
-                                    //<InfoCard className="infoCard" image={item.book_image} title={item.book_title} author={item.book_author} course={item.course} loanPeriod={item.book_loan_period}/>
+                                            placement="bottom"
+                                            popover
+                                            clickable
+                                            key={item.item_id}
+                                            className="mdbpopover"
+                                        >
+                                            <MDBBtn className="listingBtn">
+                                                <figure className="floatLeft">
+                                                    <img className="listingImg" src={item.item_img||"https://cdn1.iconfinder.com/data/icons/image-manipulations/100/13-512.png"} alt={item.item_name}/>
+                                                    <figcaption>{item.item_name}</figcaption>
+                                                </figure>
+                                            </MDBBtn>
+                                            <div>
+                                                <MDBPopoverHeader>{item.item_name}</MDBPopoverHeader>
+                                                <MDBPopoverBody>
+                                                    <p style={{display:"none"}} ref="itemID">{item.item_id}</p>
+                                                    <p className="p">{item.item_desc}</p>
+                                                    <p className="p">{item.loan_period}</p>
+                                                    {item.owner === global.customAuth.email
+                                                    ? <Fragment>
+                                                        <Button variant="danger" size="sm" onClick={() => this.deleteItem(item.item_id)}>Delete</Button>
+                                                      </Fragment>
+                                                    : <Fragment>
+                                                        <p className="p" ref="owner">{item.owner}</p>
+                                                        <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.item_id)}>Request</Button>
+                                                      </Fragment>
+                                                    }
+                                                </MDBPopoverBody>
+                                            </div>
+                                        </MDBPopover>
                                 )}
-                            </Row>
-                        </MDBContainer>
-                    )}
-                    {typeof this.state.items === "undefined" && (
-                        <Fragment>
-                            &nbsp;
-                            <Spinner animation="border" size="md"/>
-                            &nbsp;Loading...
-                        </Fragment>
-                    )}
-                </Row>
-
-                {/* Add Title Modal */}
-                <Modal show={this.state.showModal} onHide={this.handleModalClose} size="lg" centered>
+                            </Fragment>
+                        }
+                    </Fragment>
+                )}
+                {/* Add Listing Modal */}
+                <Modal show={this.state.showModal} onHide={this.handleModalClose} centered size="lg">
                     <Modal.Header closeButton>
-                        <Modal.Title>Add a listing to Misc</Modal.Title>
+                        <Modal.Title>Add a new listing to the {this.props.categoryName} Category</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form onSubmit={this.handleSubmit}>
-                            <Row>
-                                <Col>
-                                    <InputGroup>
-                                    <InputGroup.Prepend><InputGroup.Text>Item Name</InputGroup.Text></InputGroup.Prepend>
-                                        <Form.Control type="text" ref="item_name" placeholder="Enter Name Here" />
-                                    </InputGroup>
-                                    <Form.Label>Description:</Form.Label>
+                        <Col>
+                            <InputGroup>
+                                <InputGroup.Prepend><InputGroup.Text>Item Name</InputGroup.Text></InputGroup.Prepend>
+                                <Form.Control type="text" ref="item_name" placeholder="Enter Name Here" />
+                            </InputGroup>
+                            <Form.Group as={Row}>
+                                <Form.Label column sm={3}>Description:</Form.Label>
+                                <Col sm={9}>
                                     <Form.Control as="textarea" rows="3" ref="item_desc" placeholder="Please describe your item here" />
                                 </Col>
-                                <Col>
-                                    {/* TODO: Render Image Right Away! (Could be useful for Google Books Search, too!) */}
-                                    <p>Image Upload</p>
-                                    <input type="file" ref="item_image" accept="image/gif, image/jpeg, image/png" />
-                                    {/* Loan Period -- Start Date & Time to End Date & Time? "Any" Option? Permanent? */}
-                                    <p>Loan Period</p>
-                                </Col>
-                            </Row>
-                            <Button variant="success" type="submit" onClick={this.handleSubmit}>
-                                Submit
-                            </Button>
-                        </Form>
+                            </Form.Group>
+                        </Col>
+                        <Col>
+                            <p>Image Upload</p>
+                            <input type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png" />
+                            {this.state.fileURL !== null && (<img src={this.state.fileURL} alt="" className="uploadPreview"/>)}
+                            
+                            {/* Loan Period -- Start Date & Time to End Date & Time? "Any" Option? Permanent? */}
+                            <p>Loan Period (Loan Start Required)</p>
+                            <input type="date" ref="loan_start"/>
+                            <input type="date" ref="loan_end"/>
+                        </Col>
+
+                        <p>{this.state.errMsg}</p>
+
+                        <Row className="bottomRow">
+                            <Col xs={12} sm={12} md={3} lg={3} xl={3}>
+                                <Button className="btn-submit" variant="success" onClick={this.handleSubmit}>Add Listing</Button>
+                            </Col>
+                        </Row>
                     </Modal.Body>
                 </Modal>
             </Fragment>
-        );
+        )
     }
 }
 
