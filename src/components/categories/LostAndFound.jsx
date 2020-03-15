@@ -16,9 +16,6 @@ const config = {
 };
 
 class LostAndFound extends React.Component {
-    // How does inheriting/changing functions work in Composition?
-    // Just provide things through props sent to Listing below?
-    // For database & table fields, can I pass in another component/class?
 
     constructor(props) {
         super(props);
@@ -28,18 +25,6 @@ class LostAndFound extends React.Component {
                       errMsg: null};
 
     }
-
-    // Testing insertAPI
-    // componentDidMount = async () => {
-    //     await fetch(`${global.insertAPI}table=LostAndFound&field=item_name,datetime_found,location_found,item_img,discoverer&value='Orphaned Duck',2020-03-15 16:00:00,'Lindemon Pond','https://campus-share-files.s3.us-east-2.amazonaws.com/LostAndFound/orphanedDuck.jpg','${global.customAuth.email}'`, {
-    //         method: 'GET',
-    //         headers: {
-    //             'x-api-key': process.env.REACT_APP_API_KEY,
-    //         }
-    //     })
-    //     .then(response => console.log(response))
-    //     .catch(err => console.log(err));
-    // }
 
     handleImageUpload = (event) => {
         if (event.target.files.length > 0) {

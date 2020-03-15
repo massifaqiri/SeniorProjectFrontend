@@ -33,8 +33,20 @@ class Misc extends React.Component {
 
     componentDidMount(){this.fetchItems();}
 
+    deleteItem = async (item_id) => {
+        await fetch(`${global.deleteAPI}table=Misc&condition=item_id=${item_id}`, {
+                method: 'GET',
+                headers: {
+                    'x-api-key': process.env.REACT_APP_API_KEY,
+                }
+            })
+            .then(response => response.json())
+            .catch(err => console.log(err));
+        this.fetchItems();
+    };
+
     // fetchItems: retrieves current listings from Misc table
-    fetchItems = async() => {
+    fetchItems = async () => {
         await fetch(`${global.selectAPI}table=Misc&field=*`, {
             method: 'GET',
             headers: {
@@ -55,11 +67,6 @@ class Misc extends React.Component {
     handleModalClose = () => {this.setState({showModal: false, file: null})};
     handleModalShow = () => {this.setState({showModal: true})};
     
-    // handleSubmit: sends info about new listing from Add Listing Modal to DB
-        // let item_desc = this.refs.item_desc.value;
-        // let imgURL = "";
-        // let loan_deadline = this.refs.loan_deadline.value;
-        // `INSERT INTO Misc (item_name, item_desc, item_img, item_loan_deadline) VALUES ("${item_name}", "${item_desc}", "${imgURL}", "${loan_deadline}")`,
     handleSubmit = async () => {
         let item_name = this.refs.item_name.value;
         let item_desc = this.refs.item_desc.value;
@@ -85,6 +92,9 @@ class Misc extends React.Component {
                 // Save to DB
                 await this.saveToDB(item_name, item_desc, this.state.fileLocation, loan_start, loan_end);
                 
+                // Update View of Item Listings
+                this.fetchItems();
+
                 // Lastly, close the modal
                 this.handleModalClose();
             }
@@ -164,8 +174,15 @@ class Misc extends React.Component {
                                                     <p style={{display:"none"}} ref="itemID">{item.item_id}</p>
                                                     <p className="p">{item.item_desc}</p>
                                                     <p className="p">{item.loan_period}</p>
-                                                    <p className="p" ref="owner">{item.owner}</p>
-                                                    <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.item_id)}>Request</Button>
+                                                    {item.owner === global.customAuth.email
+                                                    ? <Fragment>
+                                                        <Button variant="danger" size="sm" onClick={() => this.deleteItem(item.item_id)}>Delete</Button>
+                                                      </Fragment>
+                                                    : <Fragment>
+                                                        <p className="p" ref="owner">{item.owner}</p>
+                                                        <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.item_id)}>Request</Button>
+                                                      </Fragment>
+                                                    }
                                                 </MDBPopoverBody>
                                             </div>
                                         </MDBPopover>
