@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 
 import Listing from './Listing';
-import { uploadFile } from 'react-s3';
+import S3FileUpload from 'react-s3';
 
 // Style
 import './Listing.css';
@@ -23,24 +23,64 @@ class LostAndFound extends React.Component {
     constructor(props) {
         super(props);
         this.state = {file: null,
-                      fileURL: null};
+                      fileURL: null,
+                      fileLocation: null,
+                      errMsg: null};
 
     }
 
-    handleImageUpload = (event) => {this.setState({file:event.target.files[0], fileURL: URL.createObjectURL(event.target.files[0])})}
+    handleImageUpload = (event) => {
+        if (event.target.files.length > 0) {
+            this.setState({file:event.target.files[0], fileURL: URL.createObjectURL(event.target.files[0])})
+        }
+    }
 
-    // async with await or nah?
-    handleSubmit = () => {
-        // Upload to S3
-        let image = this.state.file;
-        // console.log(image);
-        // console.log(config);
-        uploadFile(image, config)
-        .then(data => console.log(data))
-        .catch(err => console.error(`ERROR: ${err}`))
+    handleSubmit = async () => {
+        let item_name = this.refs.item_name.value;
+        let datetime_found = this.refs.item_name.value;
+        let location_found = this.refs.location_found.value;
+        let item_img = this.state.fileURL;
+        if (!item_name) {
+            this.setState({errMsg: "Please provide a name for this item"});
+        } else if (!datetime_found) {
+            this.setState({errMsg: "Please provide the day and time this item was found"});
+        } else if (!location_found) {
+            this.setState({errMsg: "Please provide the location this item was found"});
+        } else if (!item_img) {
+            this.setState({errMsg: "Please provide an image of this item"});
+        } else {
+            this.setState({errMsg: null});
+            // Upload to S3
+            this.uploadToS3();
+    
+            if (!this.state.errMsg) {
+                // Save to DB
+                this.saveToDB(item_name, datetime_found, location_found, item_img);
+                
+                // Lastly, close the modal
+            }
+        }
+    }
 
-        // Save to DB
+    uploadToS3 = async () => {
+        await S3FileUpload.uploadFile(this.state.file, config)
+        .then(data => this.setState({fileLocation: data.location}))
+        .catch(err => this.setState({errMsg: err}));
+    }
 
+    saveToDB = async(item_name, datetime_found, location_found, item_img) => {
+        await fetch(`${global.insertAPI}table=LostAndFound&field=item_name, datetime_found, location_found, item_img, discoverer&value='${item_name}', ${datetime_found}, '${location_found}', '${item_img}', '${global.customAuth.email}'`, {
+                    method: 'GET',
+                    headers: {
+                        'x-api-key': process.env.REACT_APP_API_KEY,
+                    }
+                })
+                .then(response => console.log(response))
+                .catch(err => console.log(err));
+        // await fetch(`${global.backendURL}/query`, {
+        //     method: 'POST',
+        //     body: `INSERT INTO LostAndFound (item_name, datetime_found, location_found, item_img) VALUES ('${item_name}', ${datetime_found}, '${location_found}', '${item_img}', '${global.customAuth.email}')`
+        // })
     }
 
     render() {
@@ -48,11 +88,11 @@ class LostAndFound extends React.Component {
             <Listing categoryName="Lost & Found"
                      categoryDesc='Exception: "Lost time is never found again" - Benjamin Franklin'
                      form={
-                        <Form onSubmit={this.handleSubmit}>
+                        <Form>
                             {/* Item Name */}
                             <InputGroup>
                                 <InputGroup.Prepend><InputGroup.Text>Item Name</InputGroup.Text></InputGroup.Prepend>
-                                <Form.Control type="text" ref="item_name" placeholder="..." />
+                                <Form.Control type="text" ref="item_name" placeholder="..."/>
                             </InputGroup>
                             {/* Location Found */}
                             <InputGroup>
@@ -60,53 +100,16 @@ class LostAndFound extends React.Component {
                                 <Form.Control type="text" ref="location_found" placeholder="..." />
                             </InputGroup>
                             {/* Date & Time Found */}
-
-                            {/* Image? */}
-                            {/* <label className="custom-file-upload">
-                                <input ref="image" type="file"/>
-                            </label> */}
-                            {/* Bootstrap File Upload */}
-                            {/* <div className="input-group">
-                                <div className="input-group-prepend">
-                                    <span className="input-group-text" id="inputGroupFileAddon01">
-                                    Upload
-                                    </span>
-                                </div>
-                                <div className="custom-file">
-                                    <input
-                                    type="file"
-                                    className="custom-file-input"
-                                    id="inputGroupFile01"
-                                    aria-describedby="inputGroupFileAddon01"
-                                    ref="image"
-                                    />
-                                    <label className="custom-file-label" htmlFor="inputGroupFile01">
-                                    Choose file
-                                    </label>
-                                </div>
-                            </div> */}
+                            <input type="datetime-local"/>
+                            {/* Image */}
                             <input type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png" />
                             {this.state.fileURL !== null && (<img src={this.state.fileURL} alt="" className="uploadPreview"/>)}
 
-                            {/* <div className="input-group form-group">
-                                <label className="input-group-btn">
-                                    <span className="btn btn-leading">
-                                        Add Photo <Form.Control as="input" type="file" className="invisible" multiple />
-                                    </span>
-                                </label>
-                                <Form.Control as="input" type="text" className="form-control" defaultValue="No file selected" readOnly />
-                            </div> */}
+                            <p>{this.state.errMsg}</p>
+
                             <Row className="bottomRow">
-                                {/* <Col xs={4} sm={3} md={2} lg={2} xl={2}>
-                                    <label className="btn btn-default btn-file">
-                                        Browse <input type="file" className="invisible"/>
-                                    </label>
-                                </Col>
-                                <Col xs={8} sm={9} md={7} lg={7} xl={7}>
-                                    <p>No file selected</p>
-                                </Col> */}
                                 <Col xs={12} sm={12} md={3} lg={3} xl={3}>
-                                    <Button className="btn-submit" variant="success" type="submit">Add Listing</Button>
+                                    <Button className="btn-submit" variant="success" onClick={this.handleSubmit}>Add Listing</Button>
                                 </Col>
                             </Row>
                         </Form>

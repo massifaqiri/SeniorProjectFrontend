@@ -1,14 +1,26 @@
 import React, { Fragment } from 'react';
 import { Button, Col, Form, InputGroup, Modal, Row, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn } from "mdbreact";
+import S3FileUpload from 'react-s3';
 
 import './Listing.css';
+
+const config = {
+    bucketName: 'campus-share-files',
+    dirName: 'Misc',
+    region: 'us-east-2', // Ohio
+    accessKeyId: process.env.REACT_APP_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_S3_SECRET_ACCESS_KEY,
+};
 
 class Misc extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { file: null,
+        this.state = { errMsg: null,
+                       file: null,
+                       fileLocation: null,
+                       fileURL: null,
                        items: null,
                        showModal: false}
         this.fetchItems = this.fetchItems.bind(this);
@@ -33,7 +45,11 @@ class Misc extends React.Component {
         .then(object => this.setState({ items: object }));
     };
 
-    handleImageUpload = (event) => {this.setState({file: URL.createObjectURL(event.target.files[0])})}
+    handleImageUpload = (event) => {
+        if (event.target.files.length > 0) {
+            this.setState({file:event.target.files[0], fileURL: URL.createObjectURL(event.target.files[0])})
+        }
+    }
 
     // Modal Functions
     handleModalClose = () => {this.setState({showModal: false, file: null})};
@@ -44,6 +60,54 @@ class Misc extends React.Component {
         // let imgURL = "";
         // let loan_deadline = this.refs.loan_deadline.value;
         // `INSERT INTO Misc (item_name, item_desc, item_img, item_loan_deadline) VALUES ("${item_name}", "${item_desc}", "${imgURL}", "${loan_deadline}")`,
+    handleSubmit = async () => {
+        let item_name = this.refs.item_name.value;
+        let item_desc = this.refs.item_desc.value;
+        let item_img = this.state.fileURL;
+        let loan_start = this.refs.loan_start.value;
+        let loan_end = this.refs.loan_end.value;
+        if (!item_name) {
+            this.setState({errMsg: "Please provide a name for this item"});
+        } else if (!item_desc) {
+            this.setState({errMsg: "Please provide a description for this item"});
+        } else if (!item_img) {
+            this.setState({errMsg: "Please provide an image for this item"});
+        } else if (!loan_start) {
+            this.setState({errMsg: "Please provide a loan start for this item"});
+        } else if (loan_end && (loan_end < loan_start)) {
+            this.setState({errMsg: "Please provide a valid loan end (currently set to before start)"});
+        } else {
+            this.setState({errMsg: null});
+            // Upload to S3
+            await this.uploadToS3();
+    
+            if (!this.state.errMsg) {
+                // Save to DB
+                await this.saveToDB(item_name, item_desc, item_img, loan_start, loan_end);
+                
+                // Lastly, close the modal
+                this.handleModalClose();
+            }
+        }
+    }
+
+    saveToDB = async(item_name, item_desc, item_img, loan_start, loan_end) => {
+        let url = `${global.insertAPI}table=Misc&field=item_name, item_desc, item_img, loan_start, loan_end, owner&value='${item_name}', '${item_desc}', '${item_img}', ${loan_start}, ${loan_end}, '${global.customAuth.email}'`;
+        await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'x-api-key': process.env.REACT_APP_API_KEY,
+                    }
+                })
+                .then(response => console.log(response))
+                .catch(err => console.log(err));
+    }
+
+    uploadToS3 = async () => {
+        await S3FileUpload.uploadFile(this.state.file, config)
+        .then(data => this.setState({fileLocation: data.location}))
+        .catch(err => this.setState({errMsg: err}));
+    }
 
 
     // sendRequest -> needs ID of item & source table
@@ -110,13 +174,12 @@ class Misc extends React.Component {
                         }
                     </Fragment>
                 )}
-                {/* Modal - seen when Add Listing Button is clicked*/}
+                {/* Add Listing Modal */}
                 <Modal show={this.state.showModal} onHide={this.handleModalClose} centered size="lg">
                     <Modal.Header closeButton>
                         <Modal.Title>Add a new listing to the {this.props.categoryName} Category</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/* Iterate though fields for DB table? */}
                         <Col>
                             <InputGroup>
                                 <InputGroup.Prepend><InputGroup.Text>Item Name</InputGroup.Text></InputGroup.Prepend>
@@ -131,11 +194,22 @@ class Misc extends React.Component {
                         </Col>
                         <Col>
                             <p>Image Upload</p>
-                            <input type="file" ref={this.state.fileInput} onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png" />
-                            {this.state.file !== null && (<img src={this.state.file} alt="" className="uploadPreview"/>)}
+                            <input type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png" />
+                            {this.state.fileURL !== null && (<img src={this.state.fileURL} alt="" className="uploadPreview"/>)}
+                            
                             {/* Loan Period -- Start Date & Time to End Date & Time? "Any" Option? Permanent? */}
-                            <p>Loan Period</p>
+                            <p>Loan Period (Loan Start Required)</p>
+                            <input type="date" ref="loan_start"/>
+                            <input type="date" ref="loan_end"/>
                         </Col>
+
+                        <p>{this.state.errMsg}</p>
+
+                        <Row className="bottomRow">
+                            <Col xs={12} sm={12} md={3} lg={3} xl={3}>
+                                <Button className="btn-submit" variant="success" onClick={this.handleSubmit}>Add Listing</Button>
+                            </Col>
+                        </Row>
                     </Modal.Body>
                 </Modal>
             </Fragment>
