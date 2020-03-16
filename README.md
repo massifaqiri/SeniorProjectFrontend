@@ -52,8 +52,8 @@ Contact us with any questions, comments, concerns, or feedback!
 
 ## Backend APIs for Database (CRUD) Operations
 
-### API Key for the following APIs (please strictly avoid sharing it)
-`dKEhYInqF09xERGUZcQQ3aCKELroAbsk1vVZLhb3`
+### Security of App Keys
+We have a number of API and Secret Access Keys. These are defined as environment variables; make sure when developing locally, you have a .env file with these variables. If you add any to the application, you will need to add these as environment variables on AWS Amplify as well.
 
 ### 'Select' API
 
