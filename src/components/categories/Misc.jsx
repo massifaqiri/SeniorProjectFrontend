@@ -174,15 +174,19 @@ class Misc extends React.Component {
                                                     <p style={{display:"none"}} ref="itemID">{item.item_id}</p>
                                                     <p className="p">{item.item_desc}</p>
                                                     <p className="p">{item.loan_period}</p>
-                                                    {item.owner === global.customAuth.email
-                                                    ? <Fragment>
-                                                        <Button variant="danger" size="sm" onClick={() => this.deleteItem(item.item_id)}>Delete</Button>
-                                                      </Fragment>
-                                                    : <Fragment>
-                                                        <p className="p" ref="owner">{item.owner}</p>
-                                                        <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.item_id)}>Request</Button>
-                                                      </Fragment>
-                                                    }
+                                                    {global.customAuth.email !== '' && (
+                                                        <Fragment>
+                                                            {item.owner === global.customAuth.email
+                                                            ? <Fragment>
+                                                                <Button variant="danger" size="sm" onClick={() => this.deleteItem(item.item_id)}>Delete</Button>
+                                                            </Fragment>
+                                                            : <Fragment>
+                                                                <p className="p" ref="owner">{item.owner}</p>
+                                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.item_id)}>Request</Button>
+                                                            </Fragment>
+                                                            }
+                                                        </Fragment>
+                                                    )}
                                                 </MDBPopoverBody>
                                             </div>
                                         </MDBPopover>

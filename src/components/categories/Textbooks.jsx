@@ -107,20 +107,21 @@ class Textbooks extends React.Component {
             //       }).catch(error => {
             //         console.error(error);
             //     });
-            let rv = await fetch(`${global.insertAPI}table=Textbooks&field=book_title, book_author, book_isbn, owner, book_image&value="${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}"`)
+            let url = `${global.insertAPI}table=Textbooks&field=book_title,book_author,book_isbn,owner,book_image&value='${gbBookTitle}','${gbBookAuthor}','${gbBookISBN}','${global.customAuth.email}','${gbBookImage}'`;
+            await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'x-api-key': process.env.REACT_APP_API_KEY,
+                    }
+                })
+                .then(response => console.log(response))
                 .catch(err => console.log(err));
-            // Change this to alert user if their form was NOT submitted properly.
-            if (rv.status !== 200) {
-                alert("Uff da! Something went wrong, please try again.")
-            } 
-            else {
-                // Response was status 200 - OK  (Data was successfully saved)  
-                this.handleModalClose();
-                this.fetchBooks();
-            }
+            
         } else {
             alert('Please provide a valid title.')
         }
+        this.handleModalClose();
+        this.fetchBooks();
     }
 
     sendRequest = async (owner, bookID) => {
