@@ -1,4 +1,4 @@
-# Campus Share :rabbit2:
+# Campus Share :rabbit2: 
 Welcome to Campus Share! Here's what we have documented:  
 - [X] Dependencies
 - [X] Development Environment Setup
@@ -8,8 +8,8 @@ Welcome to Campus Share! Here's what we have documented:
 
 ## Dependencies
 * [node.js](https://nodejs.org/en/)
-* Your preferred IDE (we :blue_heart: [VS Code](https://code.visualstudio.com/Download))
-* Git BASH/GUI (we recommend [GitHub Desktop](https://desktop.github.com/))
+* Your preferred IDE (we :blue_heart: [VS Code](https://code.visualstudio.com/Download)) 
+* Git BASH/GUI (we recommend [GitHub Desktop](https://desktop.github.com/)) 
 
 ## Set Up Your Development Environment!
 1. Clone this repo locally  

@@ -30,6 +30,7 @@ class CreateAccount extends React.Component {
         } else {
             this.savePassword(email, password);
         }
+
     }
 
     // Add Password to DB

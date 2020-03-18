@@ -12,6 +12,7 @@ class About extends React.Component {
                     <li>Will help with textbook trading, transportation, etc.</li>
                     <li>User friendly</li>
                     <li>Come up with more</li>
+
                 </ul>
             </div>
         );
