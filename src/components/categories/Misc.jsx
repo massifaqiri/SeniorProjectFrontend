@@ -215,7 +215,7 @@ class Misc extends React.Component {
                         </Col>
                         <Col>
                             <p>Image Upload</p>
-                            <input type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png" />
+                            <input type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png"/>
                             {this.state.fileURL !== null && (<img src={this.state.fileURL} alt="" className="uploadPreview"/>)}
                             
                             {/* Loan Period -- Start Date & Time to End Date & Time? "Any" Option? Permanent? */}

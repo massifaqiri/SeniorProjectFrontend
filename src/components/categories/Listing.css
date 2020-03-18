@@ -31,6 +31,10 @@ h1 {
     color: "#FF533D";
 }
 
+.horizontalScroll {
+    overflow: scroll;
+}
+
 .infoCard {
     margin-bottom: 1%;
     height: 87%;

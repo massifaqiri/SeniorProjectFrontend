@@ -1,33 +1,45 @@
 import React, { Fragment } from 'react';
-import { Button, Form, Row, Modal, Spinner } from 'react-bootstrap';
+import { Button, Col, Form, ListGroup, Row, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
+import S3FileUpload from 'react-s3';
 
 // Custom imports
 import './Listing.css';
 
+const config = {
+    bucketName: 'campus-share-files',
+    dirName: 'Textbooks',
+    region: 'us-east-2', // Ohio
+    accessKeyId: process.env.REACT_APP_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.REACT_APP_S3_SECRET_ACCESS_KEY,
+};
+
 const googleAPI = "https://www.googleapis.com/books/v1/volumes";
+const GOOGLE_BOOKS_API_KEY = "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M";
 
 // Add objects parameter; list of lists (info for InfoCards)
 class Textbooks extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { items: [],
-                       bookOptions: [],
-                       showModal: false,
-                       showConfirmDelete: false,
-                       API_KEY: "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M"}
-        this.handleConfirmDeleteShow = this.handleConfirmDeleteShow.bind(this);
-        this.handleConfirmDeleteClose = this.handleConfirmDeleteClose.bind(this);
-        this.handleModalShow = this.handleModalShow.bind(this);
-        this.handleModalClose = this.handleModalClose.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.fetchBooks = this.fetchBooks.bind(this);
-        this.sendRequest = this.sendRequest.bind(this);
-        this.deleteItem = this.deleteItem.bind(this);
+        // States set below: errMsg, file, fileLocalLocation, fileS3URL, gbMsg, bookOptions
+        this.state = { items: [], showModal: false }
     };
 
     componentDidMount = async () => {
         await this.fetchBooks();
+    };
+
+    // Delete book from Database
+    deleteBook = async (book_id) => {
+        await fetch(`${global.deleteAPI}table=Textbooks&condition=book_id=${book_id}`, {
+                method: 'GET',
+                headers: {
+                    'x-api-key': process.env.REACT_APP_API_KEY,
+                }
+            })
+            .then(response => response.json())
+            .catch(err => console.log(err));
+        this.fetchBooks();
     };
 
     // fetchBooks: retrieves current listings from Textbooks table
@@ -46,68 +58,63 @@ class Textbooks extends React.Component {
 
     // fetchVolumeInfo: on selection of author, populate ISBN & Photo about that volume
     fetchVolumeInfo = async() => {
-        let title = this.refs.textbook_title;
-        if (title !== "undefined" && title.value !== "") {
-            title = title.value;
+        let title = this.refs.title.value;
+        if (title) {
             // Get & Display the Volume's ISBN # and Picture
-            await fetch(`${googleAPI}?q=${title}&key=${this.state.API_KEY}`)
+            await fetch(`${googleAPI}?q=${title}&key=${GOOGLE_BOOKS_API_KEY}`)
             .then(response => response.json())
-            .then(data => this.setState({ bookOptions: data.items }));
+            .then(data => this.setState({ bookOptions: data.items }))
+            .then(this.setState({gbMsg: "Please select a title below."}));
         } else {
-            alert("Please enter a title before searching Google Books.")
+            this.setState({gbMsg: "Please enter a title before searching Google Books."});
         }
     };
 
-    // handleModalShow: shows the Add Listing Modal on button click 
-    handleModalShow = () => {
-        this.setState({showModal: true});
-    };
+    // Set Proper States if a file is uploaded
+    handleImageUpload = (event) => {
+        if (event.target.files.length > 0) {
+            this.setState({file:event.target.files[0], fileLocalLocation: URL.createObjectURL(event.target.files[0])})
+        }
+    }
 
-    // handleModalClose: closes the Add Listing Modal on button click
-    handleModalClose = () => {
-        this.setState({showModal: false});
-        this.fetchBooks();
-    };
+    // Modal Functions 
+    handleModalClose = () => {this.setState({showModal: false, file: null, fileLocalLocation: null, fileS3URL: null, gbMsg: null, bookOptions: null})};
+    handleModalShow = () => {this.setState({showModal: true})};
 
-    // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
+    // Sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async (event) => {
-        let title = this.refs.textbook_title;
+        let title = this.refs.title.value.replace("'", "");
+        let author = this.refs.author.value.replace("'", "");
+        let isbn = this.refs.isbn.value.replace("'", "");
+        let loan_start = this.refs.loan_start.value;
+        let loan_end = this.refs.loan_end.value;
+        let course = this.refs.course.value.replace("'", "");
         // Check that the ref exists and title is not blank
-        if (title !== "undefined" && title.value !== '') {
-            let gbID = this.refs.GoogleBookID;
-            // get info on title from Google Books
-            console.log(`${googleAPI}/${gbID.value}?key=${this.state.API_KEY}`);
-            let gbTitle;
-            await fetch(`${googleAPI}/${gbID.value}?key=${this.state.API_KEY}`)
-                            .then(response => response.json()
-                            .then(data => gbTitle = data));
-            let gbVolInfo = gbTitle.volumeInfo;
-            console.log(gbVolInfo);
-            let gbBookTitle = gbVolInfo.title;
-            let gbBookAuthor = gbVolInfo.authors[0]; // There may be multiple authors!
-            // let gbBookISBNs = gbVolInfo.industryIentifiers;
-            let gbBookISBN = "XXX-X-XXX-XXXXX-X";
-            // for (let isbnNum in gbBookISBNs) {
-            //     if (isbnNum.identifier.type === "ISBN_13") {
-            //         gbBookISBN = isbnNum.identifier.splice(3, 0, "-")
-            //     }
-            // }
+        if (!title) {
+            this.setState({errMsg: "Please provide a title for this book"});
+        } else if (!author) {
+            this.setState({errMsg: "Please provide an author for this book"});
+        } else if (!isbn) {
+            this.setState({errMsg: "Please provide an ISBN number for this book (check copyright page)"});
+        } else if (!loan_start) {
+            this.setState({errMsg: "Please provide a loan start for this book"});
+        } else if (loan_end && (loan_end < loan_start)) {
+            this.setState({errMsg: "Please provide a valid loan end (currently set to before start)"});
+        } else if (!this.state.fileLocalLocation) {
+            this.setState({errMsg: "Please provide an image of this book"});
+        } else {
+            this.setState({errMsg: null});
+            // Check if upload to S3 is needed
+            if (this.state.file !== null) {
+                console.log('Uploading image to S3');
+                await this.uploadToS3();
+            } else {
+                this.setState({fileS3URL: this.state.fileLocalLocation});
+            }
 
-            let gbBookImage = gbVolInfo.imageLinks.smallThumbnail;
-            console.log(`"${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}"`);
-
-            // TODO: auto-populate author & ISBN, and grab photo from Google Books API
-            // I think we need this to be an async function so we wait for the Promise to see if the data was saved properly.
-            // let rv = await fetch(`${global.backendURL}/query`, {
-            //             method: "POST",
-            //             headers: { "Content-Type": "application/json" },
-            //             body: JSON.stringify({
-            //                 query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}")`,
-            //             }),
-            //       }).catch(error => {
-            //         console.error(error);
-            //     });
-            let url = `${global.insertAPI}table=Textbooks&field=book_title,book_author,book_isbn,owner,book_image&value='${gbBookTitle}','${gbBookAuthor}','${gbBookISBN}','${global.customAuth.email}','${gbBookImage}'`;
+            // Save to DB
+            let url = `${global.insertAPI}table=Textbooks&field=book_title,book_author,book_isbn,loan_start,loan_end,course,owner,book_image&value='${title}','${author}','${isbn}','${loan_start}','${loan_end}','${course}','${global.customAuth.email}','${this.state.fileS3URL}'`;
+            console.log(url);
             await fetch(url, {
                     method: 'GET',
                     headers: {
@@ -115,15 +122,49 @@ class Textbooks extends React.Component {
                     }
                 })
                 .then(response => console.log(response))
-                .catch(err => console.log(err));
+                .catch(err => this.setState({errMsg: err.message}));
             
-        } else {
-            alert('Please provide a valid title.')
+            // Check for final Error Message
+            if (!this.state.errMsg) {
+                // Close Modal
+                this.handleModalClose();
+                // Update View
+                this.fetchBooks();
+            }
         }
-        this.handleModalClose();
-        this.fetchBooks();
     }
 
+    // User Selects Search Option
+    // populateFromGB: populate ref fields with search result
+    populateFromGB = async (searchOption) => {
+        //id
+        //volumeInfo
+          //title
+          //subtitle?
+          //authors
+          //industryIdentifiers
+            //type (ISBN_10, ISBN_13, OTHER)
+          //imageLinks
+            //thumbnail
+        
+        // Set Ref Values
+        this.refs.title.value = searchOption.volumeInfo.title;
+        this.refs.author.value = searchOption.volumeInfo.authors.join(', ');
+        let isbn = null;
+        for (let identifier of searchOption.volumeInfo.industryIdentifiers) {
+            if (identifier.type === "ISBN_13") {
+                isbn = identifier.identifier;
+            }
+        }
+        this.refs.isbn.value = (isbn || "XXX-X-XXX-XXXXX-X")
+        let image = searchOption.volumeInfo.imageLinks.thumbnail;
+        if (!image) {
+            image = "https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png";
+        }
+        this.setState({fileLocalLocation: image});
+    }
+
+    // TODO: Edit this with new request/notification system (Massi's wheelhouse)
     sendRequest = async (owner, bookID) => {
         if (owner !== global.customAuth.email) {
             let response = await fetch(`${global.backendURL}/query`, {
@@ -144,117 +185,163 @@ class Textbooks extends React.Component {
         }
     }
 
-    handleConfirmDeleteShow = () => {this.setState({showConfirmDelete: true})};
-    handleConfirmDeleteClose = () => {this.setState({showConfirmDelete: false})};
-
-    deleteItem = async () => {
-        // Delete item from Database
-        
+    uploadToS3 = async () => {
+        await S3FileUpload.uploadFile(this.state.file, config)
+        .then(data => this.setState({fileS3URL: data.location}))
+        .catch(err => this.setState({errMsg: err.message}));
     }
 
+   
     render() {
+        let header = (
+            <Row>
+                <h1 className="categoryName">{this.props.sectionTitle}</h1>
+                {global.customAuth.isAuthenticated && (
+                    <Button onClick={this.handleModalShow}>Add Listing</Button>
+                )}
+            </Row>
+        );
+
+        let loading = (
+            <Fragment>
+                &nbsp;
+                <Spinner animation="border" size="md"/>
+                &nbsp;Loading...
+            </Fragment>
+        );
+
+        let cards = (
+            <MDBContainer>
+                <Row className="mdbpopoverDiv">
+                    {this.state.items.map(item =>
+                        <MDBPopover
+                            placement="bottom"
+                            popover
+                            clickable
+                            key={item.book_id}
+                            className="mdbpopover"
+                        >
+                            <MDBBtn className="listingBtn">
+                                <figure className="floatLeft">
+                                    <img className="listingImg" src={item.book_image||"https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png"} alt="Thumbnail"/>
+                                    <figcaption>{item.book_title}</figcaption>
+                                </figure>
+                            </MDBBtn>
+                            <div>
+                                <MDBPopoverHeader>{item.book_title}</MDBPopoverHeader>
+                                <MDBPopoverBody>
+                                    <p style={{display:"none"}} ref="bookID">{item.book_id}</p>
+                                    <p className="p">{item.book_author}</p>
+                                    <p className="p">{item.course}</p>
+                                    <p className="p">{item.loanPeriod}</p>
+                                    { global.customAuth.email !== "" &&
+                                        ( item.owner !== global.customAuth.email
+                                            ? <Fragment>
+                                                <p className="p" ref="owner">{item.owner}</p>
+                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                                </Fragment>
+                                            : <Button variant="danger" size="sm" onClick={() => this.deleteBook(item.book_id)}>Delete</Button>
+                                        )
+                                    }
+                                </MDBPopoverBody>
+                            </div>
+                        </MDBPopover>
+                    )}
+                </Row>
+            </MDBContainer>
+        );
+
+        let modal = (
+            <Modal size="xl" show={this.state.showModal} onHide={this.handleModalClose}>
+                <Modal.Header closeButton>
+                    {/* Change to Dropdown of possible listing categories? */}
+                    <Modal.Title>Add a listing to {this.props.sectionTitle}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form>
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control type="text" ref="title" placeholder="Enter Title Here" />
+                        {/* version 1: click button to search for volume info */}
+                        <Button variant="outline-secondary" onClick={this.fetchVolumeInfo}>
+                            Autopopulate with Google Books
+                        </Button>
+                        <p>{this.state.gbMsg}</p>
+                        {/* TODO: Make this search more visual & clear! (Change from SELECT) */}
+                        {this.state.bookOptions && (
+                            <Form.Group controlId="titleSelect">
+                                <Form.Label>Select title</Form.Label>
+                                <ListGroup horizontal className="horizontalScroll">
+                                    {this.state.bookOptions !== null && this.state.bookOptions.map(bookOption =>
+                                        <ListGroup.Item action onClick={(event) => {event.preventDefault(); this.populateFromGB(bookOption)}} id={bookOption.id} key={bookOption.id}>
+                                            <div>
+                                                <p>{bookOption.volumeInfo.title || "Title Not Listed"}</p>
+                                                <p>{bookOption.volumeInfo.subtitle || ""}</p>
+                                                {bookOption.volumeInfo.imageLinks
+                                                  ? <img src={bookOption.volumeInfo.imageLinks.thumbnail} alt={bookOption.id}/>
+                                                  : <img src="https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png" className="uploadPreview" alt={bookOption.id}/>
+                                                }
+                                                {bookOption.volumeInfo.authors
+                                                  ? <p>{bookOption.volumeInfo.authors.join(', ')}</p>
+                                                  : <p>Author Not Listed</p>
+                                                }
+                                                <p>&copy;{bookOption.volumeInfo.publishedDate || "Publishing Date Not Listed"}</p>
+                                            </div>
+                                        </ListGroup.Item>
+                                    )}
+                                </ListGroup>
+                            </Form.Group>
+                        )}
+                        <Row>
+                            <Col>
+                                <Form.Group>
+                                    <Form.Label>Author</Form.Label>
+                                    <Form.Control type="text" ref="author"/>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>ISBN</Form.Label>
+                                    <Form.Control type="text" ref="isbn" placeholder="XXX-X-XXX-XXXXX-X"/>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Image</Form.Label>
+                                    <Form.Control type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png"/>
+                                </Form.Group>
+                                {/* {this.state.fileLocalLocation !== null && (<img src={this.state.fileLocalLocation} alt="" className="uploadPreview"/>)} */}
+                            </Col>
+                            <Col>
+                                <Form.Group>
+                                    <Form.Label>Loan Start</Form.Label>
+                                    <Form.Control type="date" ref="loan_start"/>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Loan End (Optional)</Form.Label>
+                                    <Form.Control type="date" ref="loan_end"/>
+                                </Form.Group>
+                                <Form.Group>
+                                    <Form.Label>Course</Form.Label>
+                                    <Form.Control type="text" ref="course"/>
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <p>{this.state.errMsg}</p>
+                        <Button variant="success" onClick={this.handleSubmit}>
+                            Submit
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+        );
 
         return (
             <Fragment>
-                <Row>
-                    <h1 className="categoryName">{this.props.sectionTitle}</h1>
-                    {global.customAuth.isAuthenticated && (
-                        <Button onClick={this.handleModalShow}>Add Listing</Button>
-                    )}
-                </Row>
+                {header}
                 <p className="categoryDesc">Care to share or borrow a book?</p>
                 <Row>
-                    {typeof this.state.items !== "undefined" && (
-                        // Retry Row and Col?
-                        <MDBContainer>
-                            <Row className="mdbpopoverDiv">
-                                {this.state.items.map(item =>
-                                    <MDBPopover
-                                        placement="bottom"
-                                        popover
-                                        clickable
-                                        key={item.book_id}
-                                        className="mdbpopover"
-                                    >
-                                        <MDBBtn className="listingBtn">
-                                            <figure className="floatLeft">
-                                                <img className="listingImg" src={item.book_image||"https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png"} alt={item.book_title}/>
-                                                <figcaption>{item.book_title}</figcaption>
-                                            </figure>
-                                        </MDBBtn>
-                                        <div>
-                                            <MDBPopoverHeader>{item.book_title}</MDBPopoverHeader>
-                                            <MDBPopoverBody>
-                                                <p style={{display:"none"}} ref="bookID">{item.book_id}</p>
-                                                <p className="p">{item.book_author}</p>
-                                                <p className="p">{item.course}</p>
-                                                <p className="p">{item.loanPeriod}</p>
-                                                { global.customAuth.email !== "" &&
-                                                    ( item.owner !== global.customAuth.email
-                                                        ? <Fragment>
-                                                            <p className="p" ref="owner">{item.owner}</p>
-                                                            <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
-                                                        </Fragment>
-                                                        : ( this.state.showConfirmDelete
-                                                            ? <Fragment>
-                                                                <p>Are you sure you want to delete this item?</p>
-                                                                <Button variant="outline-secondary" size="sm" onClick={() => this.handleConfirmDeleteClose}>Cancel</Button>
-                                                                <Button variant="danger" size="sm" onClick={() => this.deleteItem(item.id)}>Yes, Delete</Button>
-                                                              </Fragment>
-                                                            : <Button variant="danger" size="sm" onClick={() => this.handleConfirmDeleteShow}>Delete</Button>
-                                                            )
-                                                    )
-                                                }
-                                            </MDBPopoverBody>
-                                        </div>
-                                    </MDBPopover>
-                                    //<InfoCard className="infoCard" image={item.book_image} title={item.book_title} author={item.book_author} course={item.course} loanPeriod={item.book_loan_period}/>
-                                )}
-                            </Row>
-                        </MDBContainer>
-                    )}
-                    {typeof this.state.items === "undefined" && (
-                        <Fragment>
-                            &nbsp;
-                            <Spinner animation="border" size="md"/>
-                            &nbsp;Loading...
-                        </Fragment>
-                    )}
+                    {typeof this.state.items === "undefined"
+                     ? loading
+                     : cards
+                    }
                 </Row>
-
-                {/* Add Title Modal */}
-                <Modal show={this.state.showModal} onHide={this.handleModalClose}>
-                    <Modal.Header closeButton>
-                        {/* Change to Dropdown of possible listing categories? */}
-                        <Modal.Title>Add a listing to {this.props.sectionTitle}</Modal.Title>
-                        <Modal.Body>
-                            <Form onSubmit={this.handleSubmit}>
-                                {/* Refactor for generic listing (not just Textbooks) */}
-                                <Form.Label>Title</Form.Label>
-                                <Form.Control type="text" ref="textbook_title" placeholder="Enter Title Here" />
-                                {/* version 1: click button to search for volume info */}
-                                <Button variant="outline-secondary" onClick={this.fetchVolumeInfo}>
-                                    Search for Title
-                                </Button>
-                                {this.state.bookOptions.length > 0 && (
-                                    <Form.Group controlId="titleSelect">
-                                        <Form.Label>Select title</Form.Label>
-                                        <Form.Control ref="GoogleBookID" as="select">
-                                            {this.state.bookOptions.map(bookOption =>
-                                                // each option's value is the volume's id
-                                                <option value={bookOption.id} key={bookOption.id}>Author: {bookOption.volumeInfo.authors}&nbsp;Publisher: {bookOption.volumeInfo.publisher}&nbsp;&copy;{bookOption.volumeInfo.publishedDate}</option>
-                                            )}
-                                        </Form.Control>
-                                    </Form.Group>
-                                )}
-                                <Button variant="success" type="submit" onClick={this.handleSubmit}>
-                                    Submit
-                                </Button>
-                            </Form>
-                        </Modal.Body>
-                    </Modal.Header>
-
-                </Modal>
+                {modal}
             </Fragment>
         );
     }
