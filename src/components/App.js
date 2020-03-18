@@ -11,8 +11,8 @@ import {
 import NavBar from "./Navbar";
 
 // Public Pages
-import About from "./About";
 import Landing from "./Landing";
+import About from "./About";
 import Categories from "./Categories";
 import SignIn from "./SignIn";
 import CreateAccount from "./CreateAccount";
@@ -27,9 +27,12 @@ import Textbooks from "./categories/Textbooks";
 import Misc from "./categories/Misc";
 import Skill from "./categories/Skill";
 import Transport from "./categories/Transport";
+import LostAndFound from "./categories/LostAndFound";
+import Listing from "./categories/Listing";
+import ResetPassword from './ResetPassword';
 
-// Bootstrap Imports
-import { Navbar } from 'react-bootstrap';
+import Backdoor from "./Bcrypt_Backdoor";
+// console.log(process.env);
 
 const getCookie = (cname) => {
   let name = cname + "=";
@@ -51,11 +54,16 @@ const getCookie = (cname) => {
 global.customAuth = {
   isAuthenticated: (getCookie("email") !== ""),
   email: getCookie("email"),
-  authenticate(email) {
+  authenticate(email, staySignedIn) {
     this.email = email;
     // Set expires to 24 hrs by default; add 14 days based on user selection later
     let d = new Date();
-    d.setTime(d.getTime() + (24*60*60*1000));
+    let sessionLength = 24*60*60*1000;
+    if (staySignedIn) {
+      sessionLength *= 14;
+    }
+    console.log(sessionLength);
+    d.setTime(d.getTime() + sessionLength);
     document.cookie = `email=${this.email}; expires=${d.toUTCString()}; path=/;`
   },
   signout() {
@@ -71,7 +79,10 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
   <Route {...rest} render={(props) => (
     global.customAuth.isAuthenticated
       ? <Component {...props} />
-      : <Redirect to='/signin' />
+      : <Redirect to={{
+          pathname: '/signin',
+          state: { from: props.location }
+       }} />
   )} />
 )
 
@@ -83,13 +94,7 @@ const App = () => {
     <div className="App">
       <Router>
         {/* Nav Bar -- on all pages */}
-        <Navbar className="App-navBar" expand="lg" sticky="top">
-          <img src={require("./images/campushare_logo.png")} className="logo" alt="CampusShare Logo"/>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <NavBar />
-          </Navbar.Collapse>
-        </Navbar>
+        <NavBar />
         <div className="element">
           {/* Renders the proper content based on route */}
           <Switch>
@@ -103,18 +108,25 @@ const App = () => {
             )} />
             <Route path="/categories" component={Categories}/>
             {/* Public Pages */}
+            <Route path="/about" component={About}/>
             <Route path="/textbooks">
               <Textbooks sectionTitle="Textbooks" className="listing" />
             </Route>
             <Route path="/about" component={About} />
+            <Route path="/lostandfound" component={LostAndFound} />
+            <Route path="/listing" component={Listing} />
             <Route path="/misc" component={Misc} />
             <Route path="/skill" component={Skill} />
             <Route path="/transport" component={Transport} />
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />
+            {/* Keep a logged-in user from accessing? */}
+            <Route path="/recoverpassword" component={RecoverPassword} />
+            {/* Reset Password -- not logged in, but need a JSON Web Token to access */}
+            <Route path="/resetpassword/:email/:token" component={ResetPassword} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
-            <PrivateRoute path="/recoverpassword" component={RecoverPassword} />
+            <Route path="/backdoor" component={Backdoor} />
           </Switch>
         </div>
         </Router>

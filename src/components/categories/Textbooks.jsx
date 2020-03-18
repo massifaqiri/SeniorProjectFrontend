@@ -14,25 +14,34 @@ class Textbooks extends React.Component {
         this.state = { items: [],
                        bookOptions: [],
                        showModal: false,
+                       showConfirmDelete: false,
                        API_KEY: "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M"}
+        this.handleConfirmDeleteShow = this.handleConfirmDeleteShow.bind(this);
+        this.handleConfirmDeleteClose = this.handleConfirmDeleteClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.fetchBooks = this.fetchBooks.bind(this);
         this.sendRequest = this.sendRequest.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
     };
 
-    // componentWillMount 
-
     componentDidMount = async () => {
-        this.fetchBooks();
+        await this.fetchBooks();
     };
 
     // fetchBooks: retrieves current listings from Textbooks table
-    fetchBooks = async() => {
-        await fetch(`${global.backendURL}/querytextbooks`)
+    fetchBooks = async () => {
+        let url = `${global.selectAPI}table=Textbooks&field=*`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
         .then(response => response.json())
-        .then(data => this.setState({ items: data }));
+        .then(json => this.setState({ items: json }))
+        .catch(err => alert(err));
     };
 
     // fetchVolumeInfo: on selection of author, populate ISBN & Photo about that volume
@@ -57,6 +66,7 @@ class Textbooks extends React.Component {
     // handleModalClose: closes the Add Listing Modal on button click
     handleModalClose = () => {
         this.setState({showModal: false});
+        this.fetchBooks();
     };
 
     // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
@@ -88,27 +98,30 @@ class Textbooks extends React.Component {
 
             // TODO: auto-populate author & ISBN, and grab photo from Google Books API
             // I think we need this to be an async function so we wait for the Promise to see if the data was saved properly.
-            let rv = await fetch(`${global.backendURL}/query`, {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}")`,
-                        }),
-                  }).catch(error => {
-                    console.error(error);
-                });
-            // Change this to alert user if their form was NOT submitted properly.
-            if (rv.status !== 200) {
-                alert("Uff da! Something went wrong, please try again.")
-            } 
-            // else {
-            //     // Response was status 200 - OK  (Data was successfully saved)  
-            //     this.handleModalClose();
-            //     this.fetchBooks();
-            // }
+            // let rv = await fetch(`${global.backendURL}/query`, {
+            //             method: "POST",
+            //             headers: { "Content-Type": "application/json" },
+            //             body: JSON.stringify({
+            //                 query: `INSERT INTO Textbooks (book_title, book_author, book_isbn, owner, book_image) VALUES ("${gbBookTitle}", "${gbBookAuthor}", "${gbBookISBN}", "${global.customAuth.email}", "${gbBookImage}")`,
+            //             }),
+            //       }).catch(error => {
+            //         console.error(error);
+            //     });
+            let url = `${global.insertAPI}table=Textbooks&field=book_title,book_author,book_isbn,owner,book_image&value='${gbBookTitle}','${gbBookAuthor}','${gbBookISBN}','${global.customAuth.email}','${gbBookImage}'`;
+            await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'x-api-key': process.env.REACT_APP_API_KEY,
+                    }
+                })
+                .then(response => console.log(response))
+                .catch(err => console.log(err));
+            
         } else {
             alert('Please provide a valid title.')
         }
+        this.handleModalClose();
+        this.fetchBooks();
     }
 
     sendRequest = async (owner, bookID) => {
@@ -131,17 +144,25 @@ class Textbooks extends React.Component {
         }
     }
 
+    handleConfirmDeleteShow = () => {this.setState({showConfirmDelete: true})};
+    handleConfirmDeleteClose = () => {this.setState({showConfirmDelete: false})};
+
+    deleteItem = async () => {
+        // Delete item from Database
+        
+    }
+
     render() {
 
         return (
             <Fragment>
                 <Row>
-                    <h1 className="sectionTitle">{this.props.sectionTitle}</h1>
+                    <h1 className="categoryName">{this.props.sectionTitle}</h1>
                     {global.customAuth.isAuthenticated && (
                         <Button onClick={this.handleModalShow}>Add Listing</Button>
                     )}
                 </Row>
-                <p className="sectionDesc">Care to share or borrow a book?</p>
+                <p className="categoryDesc">Care to share or borrow a book?</p>
                 <Row>
                     {typeof this.state.items !== "undefined" && (
                         // Retry Row and Col?
@@ -168,8 +189,22 @@ class Textbooks extends React.Component {
                                                 <p className="p">{item.book_author}</p>
                                                 <p className="p">{item.course}</p>
                                                 <p className="p">{item.loanPeriod}</p>
-                                                <p className="p" ref="owner">{item.owner}</p>
-                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                                { global.customAuth.email !== "" &&
+                                                    ( item.owner !== global.customAuth.email
+                                                        ? <Fragment>
+                                                            <p className="p" ref="owner">{item.owner}</p>
+                                                            <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                                        </Fragment>
+                                                        : ( this.state.showConfirmDelete
+                                                            ? <Fragment>
+                                                                <p>Are you sure you want to delete this item?</p>
+                                                                <Button variant="outline-secondary" size="sm" onClick={() => this.handleConfirmDeleteClose}>Cancel</Button>
+                                                                <Button variant="danger" size="sm" onClick={() => this.deleteItem(item.id)}>Yes, Delete</Button>
+                                                              </Fragment>
+                                                            : <Button variant="danger" size="sm" onClick={() => this.handleConfirmDeleteShow}>Delete</Button>
+                                                            )
+                                                    )
+                                                }
                                             </MDBPopoverBody>
                                         </div>
                                     </MDBPopover>
@@ -212,9 +247,6 @@ class Textbooks extends React.Component {
                                         </Form.Control>
                                     </Form.Group>
                                 )}
-                                {/* TODO: Auto Populate Author */}
-                                {/* TODO: Auto Populate ISBN */}
-                                {/* TODO: Auto Populate Book Image */}
                                 <Button variant="success" type="submit" onClick={this.handleSubmit}>
                                     Submit
                                 </Button>

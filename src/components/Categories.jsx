@@ -11,123 +11,117 @@ class Categories extends React.Component {
         return (
             <Container>
                 <Row className="row">
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="https://www.luther.edu/" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/clothing.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Clothing</figcaption>
+                                <figcaption className="categoryFigcaption">Clothing</figcaption>
                             </figure>
                         </a> 
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/events.png" className="categoryImg"/> 
-                                <figcaption class="categoryFigcaption">Events</figcaption>
+                                <figcaption className="categoryFigcaption">Events</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/food.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Food</figcaption>
+                                <figcaption className="categoryFigcaption">Food</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/housing.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Housing</figcaption>
+                                <figcaption className="categoryFigcaption">Housing</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
-                        <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
+                        <a href="/lostandfound" className="nounderline">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/lostfound.png" className="categoryImg"/> 
-                                <figcaption class="categoryFigcaption">Lost & Found</figcaption>
+                                <figcaption className="categoryFigcaption">Lost & Found</figcaption>
                             </figure>
                         </a>
                     </Col>
-                </Row>
-                <Row className="row">
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="https://www.xkcd.com/" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/meme.png" className="categoryImg"/> 
-                                <figcaption class="categoryFigcaption">Meme</figcaption>
+                                <figcaption className="categoryFigcaption">Meme</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/mentor.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Mentorship</figcaption>
+                                <figcaption className="categoryFigcaption">Mentorship</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="/misc" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/umbrella.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Misc.</figcaption>
+                                <figcaption className="categoryFigcaption">Misc.</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/opportunities.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Opportunities</figcaption>
+                                <figcaption className="categoryFigcaption">Opportunities</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/projects.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Projects</figcaption>
+                                <figcaption className="categoryFigcaption">Projects</figcaption>
                             </figure>
                         </a>
                     </Col>
-                </Row>
-                <Row className="row">
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="skill" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/skills.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Skills</figcaption>
+                                <figcaption className="categoryFigcaption">Skills</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col className="col">
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="categories" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/social.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Social</figcaption>
+                                <figcaption className="categoryFigcaption">Social</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="textbooks" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/textbooks.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Textbooks</figcaption>
+                                <figcaption className="categoryFigcaption">Textbooks</figcaption>
                             </figure>
                         </a>
                     </Col>
-                    <Col>
+                    <Col xs={4} sm={3} md={3} lg={2} xl={3}>
                         <a href="transport" className="nounderline">
-                            <figure class="categoryFigure">
+                            <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/transportation.png" className="categoryImg"/>
-                                <figcaption class="categoryFigcaption">Transportation</figcaption>
+                                <figcaption className="categoryFigcaption">Transportation</figcaption>
                             </figure>
                         </a>
-                    </Col>
-                    <Col>
                     </Col>
                 </Row>
             </Container>

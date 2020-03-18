@@ -27,6 +27,10 @@ figcaption:hover {
     float: left;
 }
 
+h1 {
+    color: "#FF533D";
+}
+
 .infoCard {
     margin-bottom: 1%;
     height: 87%;
@@ -44,7 +48,7 @@ figcaption:hover {
     height: 25vh;
 }
 
-.sectionTitle {
+.categoryName {
     color: #FF533D;
 }
 
@@ -56,7 +60,27 @@ figcaption:hover {
     color: #FF533D;
 }
 
-.sectionDesc {
+.categoryDesc {
     font-style: italic;
-    font-size: x-large;
+    font-size: small;
+}
+
+.invisible {
+    display: none;
+}
+
+.btn-leading {
+    color: white;
+    background-color: #373737;
+    border-top-right-radius: 0%;
+    border-bottom-right-radius: 0%;
+}
+
+.btn-leading:hover {
+    color: white;
+    background-color: #0080fe;
+}
+
+.uploadPreview {
+    width: 100%;
 }
