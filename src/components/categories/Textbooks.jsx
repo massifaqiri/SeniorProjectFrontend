@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { Button, Col, Form, ListGroup, Row, Modal, Spinner } from 'react-bootstrap';
+import { Button, Col, Form, ListGroup, Modal, Row, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
 import S3FileUpload from 'react-s3';
 
@@ -100,17 +100,11 @@ class Textbooks extends React.Component {
             this.setState({errMsg: "Please provide a loan start for this book"});
         } else if (loan_end && (loan_end < loan_start)) {
             this.setState({errMsg: "Please provide a valid loan end (currently set to before start)"});
-        } else if (!this.state.fileLocalLocation) {
-            this.setState({errMsg: "Please provide an image of this book"});
+        } else if (!this.state.file) {
+            this.setState({errMsg: "Please provide an image of your book (shows condition)"});
         } else {
             this.setState({errMsg: null});
-            // Check if upload to S3 is needed
-            if (this.state.file !== null) {
-                console.log('Uploading image to S3');
-                await this.uploadToS3();
-            } else {
-                this.setState({fileS3URL: this.state.fileLocalLocation});
-            }
+            await this.uploadToS3();
 
             // Save to DB
             let url = `${global.insertAPI}table=Textbooks&field=book_title,book_author,book_isbn,loan_start,loan_end,course,owner,book_image&value='${title}','${author}','${isbn}','${loan_start}','${loan_end}','${course}','${global.customAuth.email}','${this.state.fileS3URL}'`;
@@ -289,7 +283,7 @@ class Textbooks extends React.Component {
                                         </ListGroup.Item>
                                     )}
                                 </ListGroup>
-                            </Form.Group>
+                        </Form.Group>
                         )}
                         <Row>
                             <Col>
@@ -303,7 +297,7 @@ class Textbooks extends React.Component {
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Image</Form.Label>
-                                    <Form.Control type="file" onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png"/>
+                                    <Form.Control type="file" required={false} onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png"/>
                                 </Form.Group>
                                 {/* {this.state.fileLocalLocation !== null && (<img src={this.state.fileLocalLocation} alt="" className="uploadPreview"/>)} */}
                             </Col>
