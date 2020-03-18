@@ -11,7 +11,8 @@ import {
 import NavBar from "./Navbar";
 
 // Public Pages
-import Landing from "./Landing"
+import About from "./About";
+import Landing from "./Landing";
 import Categories from "./Categories";
 import SignIn from "./SignIn";
 import CreateAccount from "./CreateAccount";
@@ -105,6 +106,7 @@ const App = () => {
             <Route path="/textbooks">
               <Textbooks sectionTitle="Textbooks" className="listing" />
             </Route>
+            <Route path="/about" component={About} />
             <Route path="/misc" component={Misc} />
             <Route path="/skill" component={Skill} />
             <Route path="/transport" component={Transport} />

@@ -1,33 +1,37 @@
 import React, { Fragment } from 'react';
 import { Button, Form, Row, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
-import "./Skill.css";
-
-const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
+import "./Listing.css";
 
 class Skill extends React.Component {
     constructor(props) {
         super(props);
         this.state = { items: [],
-                       showModal: false}
+                       showModal: false,
+                       API_KEY: "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M"}
         this.handleModalShow = this.handleModalShow.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.fetchSkill = this.fetchSkill.bind(this);
         this.sendRequest = this.sendRequest.bind(this);
     };
-
     // componentWillMount 
 
     componentDidMount = async () => {
         this.fetchSkill();
     };
 
-    // fetchCar: retrieves current listings from Transport table
+    // fetchSkill: retrieves current listings from Transport table
     fetchSkill = async() => {
-        await fetch(`${backendURL}/queryskill`)
+        await fetch(`${global.backendURL}/query`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json"},
+            body: JSON.stringify({
+                query: `SELECT * FROM Skill WHERE owner!=${global.customAuth.email}`
+            })
+        })
         .then(response => response.json())
-        .then(data => this.setState({ items: data }));
+        .then(response => console.log(response));
     };
 
     // handleModalShow: shows the Add Listing Modal on button click 
@@ -38,14 +42,15 @@ class Skill extends React.Component {
 
     // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async (event) => {
-        let skill_title = this.refs.skill_title;
+        let skill_title = this.refs.skill_title.value;
         // Check that the ref exists and title is not blank
-        if (skill_title !== '') {            
-            let rv = await fetch(`${backendURL}/query`, {
+        if (skill_title !== '') {      
+            let skill_description = this.refs.skill_description.value; 
+            let rv = await fetch(`${global.backendURL}/query`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            query: `INSERT INTO Skill (skill_title, skill_description) VALUES ("${skill_title}", "${skill_title}")`,
+                            query: `INSERT INTO Skill (skill_title, skill_description) VALUES ("${skill_title}", "${skill_description}")`,
                         }),
                   }).catch(error => {
                     console.error(error);
@@ -55,13 +60,13 @@ class Skill extends React.Component {
                 alert("Uff da! Something went wrong, please try again.")
             } 
         } else {
-            alert('Please provide a valid title.')
+            alert('Please provide a valid entry.')
         }
     }
 
     sendRequest = async (owner, bookID) => {
-        if (owner !== this.state.user.email) {
-            let rv = await fetch(`${backendURL}/query`, {
+        if (owner !== global.customAuth.email) {
+            let rv = await fetch(`${global.backendURL}/query`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json"},
                 body: JSON.stringify({
@@ -82,11 +87,13 @@ class Skill extends React.Component {
     render() {
         return (
             <Fragment>
-                <h1 className="skill1">Skills</h1>
-                <p className="sectionDesc">Care to share a skill?</p>
                 <Row>
-                    <Button onClick={this.handleModalShow}>Add Listing</Button>
+                    <h1 className="skill1">Skills</h1>
+                    {global.customAuth.isAuthenticated && (
+                        <Button onClick={this.handleModalShow}>Add Listing</Button>
+                    )}
                 </Row>
+                <p className="sectionDesc">Care to share a skill?</p>
                 <Row>
                     {typeof this.state.items !== "undefined" && (
                         <MDBContainer>
@@ -99,7 +106,7 @@ class Skill extends React.Component {
                                         key={item.skill_id}
                                         className="mdbpopover"
                                     >
-                                        <MDBBtn className="skillBtn">
+                                        <MDBBtn className="listingBtn">
                                             <figure className="floatLeft">
                                                 <figcaption>{item.skill_title}</figcaption>
                                             </figure>
@@ -108,6 +115,7 @@ class Skill extends React.Component {
                                             <MDBPopoverHeader>{item.skill_title}</MDBPopoverHeader>
                                             <MDBPopoverBody>
                                                 <p style={{display:"none"}} ref="skill_title">{item.skill_id}</p>
+                                                <p className="p">{item.skill_description}</p>
                                                 <p className="p" ref="owner">{item.owner}</p>
                                                 <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.skill_id)}>Request</Button>
                                             </MDBPopoverBody>
@@ -127,15 +135,15 @@ class Skill extends React.Component {
                 </Row>
 
                 {/* Add Title Modal */}
-                <Modal show={this.state.showModal} onHide={this.handleModalClose}>
+                <Modal show={this.state.showModal} onHide={this.handleModalClose} size="lg" centered>
                     <Modal.Header closeButton>
                         {/* Change to Dropdown of possible listing categories? */}
                         <Modal.Title>Add a listing to Skills</Modal.Title>
                         <Modal.Body>
                             <Form onSubmit={this.handleSubmit}>
                                 {/* Refactor for generic listing (not just Textbooks) */}
-                                <Form.Label>Owner</Form.Label>
-                                <Form.Control type="text" ref="skill_title" placeholder="Enter Name" />
+                                <Form.Label>Title</Form.Label>
+                                <Form.Control type="text" ref="skill_title" placeholder="Enter Title" />
                                 <Form.Label>Description of Skill</Form.Label>
                                 <Form.Control type="text" ref="skill_description" placeholder="Description Here" />
                                 <Button variant="success" type="submit" onClick={this.handleSubmit}>
