@@ -4,7 +4,7 @@ import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } fr
 import S3FileUpload from 'react-s3';
 
 // Custom imports
-import './Listing.css';
+import './styles/Listing.css';
 
 const config = {
     bucketName: 'campus-share-files',

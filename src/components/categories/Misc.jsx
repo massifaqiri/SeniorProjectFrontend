@@ -3,7 +3,7 @@ import { Button, Col, Form, InputGroup, Modal, Row, Spinner } from 'react-bootst
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn } from "mdbreact";
 import S3FileUpload from 'react-s3';
 
-import './Listing.css';
+import './styles/Listing.css';
 
 const config = {
     bucketName: 'campus-share-files',

@@ -1,93 +1,63 @@
-// src/components/Profile.js
+import React, { Fragment } from "react"; //useState
+import { Button, Form } from "react-bootstrap"; // Modal
 
-import React, { useState, Fragment } from "react"; //useState
-import { Button, Col, Modal, Row} from "react-bootstrap"; // Modal
-// import UserDetails_Modal from "./UserDetails_Modal";
+// Custom Imports
+import "./styles/Profile.css";
 
-import "./Profile.css";
-import ResetPassword from "./ResetPassword";
+const bcrypt = require('bcryptjs');
 
-const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
+class Profile extends React.Component {
 
-const Profile = (props) => {
-
-  // TODO: Add "change password"
-  
-  let email = "";
-
-  const [showModal, setShow] = useState(false);
-
-  function handleShow() {
-    fetchUserData(email);
-    setShow(true);
-  };
-
-  function handleClose() {
-    setShow(false);
-  };
-
-  const saveChanges = async() => {
-    // to determine if an update to the database is necessary:
-    // check values of current selections against userdata variable
-    handleClose();
+  constructor(props) {
+    super(props);
+    this.state = { errMsg: null }
   }
 
-  // Retrieve current user data from DB and store in userdata
-  let userdata;
-  async function fetchUserData(user_email) {
-    await fetch(`${backendURL}/userdata`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-          email: user_email
-      })
-    })
-    .then(response => response.json())
-    .then(data => userdata = data);
+  changePassword = async () => {
+    let newPassword = this.refs.newPassword.value;
+    if (newPassword) {
+      if (this.state.errMsg) {
+        this.setState({errMsg: null});
+      }
+      
+      // Encrypt newPassword
+      bcrypt.hash(newPassword, 10, function(err, hash) {
+        // Save to DB
+        let url = `${global.updateAPI}table=Users&field=password&value='${hash}'&condition=email='${global.customAuth.email}'`;
+        fetch(url, {
+            method: 'GET',
+            headers: {
+              'x-api-key': process.env.REACT_APP_API_KEY,
+            }
+          })
+          .then(response => response.json())
+          .then(res => console.log(res))
+          .catch(err => console.log(err.message));
+      });
+      // Display Success or Error to User
+      // Sign out and redirect to /signin?
+    } else {
+      this.setState({errMsg: "Please enter a password."})
+    }
   }
 
-  let majors = ["Accounting", "Africana Studies", "Allied Health Sciences", "Anthropology", "Art", 
-                  "Biblical Languages", "Biology",
-                  "Chemistry", "Classics", "Communication Studies", "Computer Science",
-                  "Data Science",
-                  "Economics", "Elementary Education", "English", "Environmental Studies", "Exercise Science", 
-                  "French",
-                  "German",
-                  "Health Promotion",
-                  "History",
-                  "International Studies",
-                  "Management", "Mathematics", "Mathematics/Statistics", "Music"," Music education",
-                  "Neuroscience", "Nordic Studies", "Nursing", 
-                  "Philosophy", "Physics", "Political science", "Psychology",
-                  "Religion",
-                  "Social work", "Sociology", "Spanish",
-                  "Theatre",
-                  "Visual Communication",
-                  "Women and Gender Studies"]
-  let majors_options = [];
-  for (var i = 0; i < majors.length; i++) {
-      majors_options.push(<option key={majors[i]}>{majors[i]}</option>)
-  }
 
-  return (
-    <Fragment>
-      <h1>Profile Page</h1>
-      <Row>
-        <Col>
-          <p>Change Password</p>
-          <ResetPassword />
-        </Col>
-        <Col>
-          <p>Details</p>
-          <p>{userdata}</p>
-          <Button onClick={handleShow}>Edit</Button>
-          <Modal show={showModal}>
-            <Button onClick={saveChanges}>Save</Button>
-          </Modal>
-        </Col>
-      </Row>
-    </Fragment>
-  );
+  render() {
+    return (
+      <Fragment>
+        <h1>Profile Page</h1>
+        <p>Change Password</p>
+        <Form>
+            <Form.Group controlId="newPassword">
+                <Form.Label>New Password</Form.Label>
+                <Form.Control required type="password" ref="newPassword" placeholder="Password" />
+            </Form.Group>
+            <p>{this.state.errMsg}</p>
+          <Button onClick={this.changePassword}>Change</Button>
+        </Form>
+      </Fragment>
+    );
+  }
 };
 
 export default Profile;

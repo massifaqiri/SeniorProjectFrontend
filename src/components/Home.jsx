@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 
 // Custom Imports
-import "./Home.css";
+import "./styles/Home.css";
 import ControlledCarousel from "./Slideshow";
 
 class Home extends React.Component {

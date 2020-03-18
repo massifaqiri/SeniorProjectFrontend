@@ -1,7 +1,7 @@
 import React from 'react';
 import { Col, Container, Image, Nav, Row } from 'react-bootstrap';
 
-import "./Categories.css";
+import "./styles/Categories.css";
 
 class Categories extends React.Component {
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
-import './SignIn.css';
+import './styles/SignIn.css';
 
 const bcrypt = require('bcryptjs');
 

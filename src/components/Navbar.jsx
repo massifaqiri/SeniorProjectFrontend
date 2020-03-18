@@ -3,7 +3,7 @@
 import React, { Fragment } from "react";
 import { Button, Col, Nav, Navbar, Row } from "react-bootstrap";
 
-import "./Navbar.css";
+import "./styles/Navbar.css";
 
 const NavBar = () => {
 

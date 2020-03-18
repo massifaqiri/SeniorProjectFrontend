@@ -3,7 +3,7 @@ import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import emailjs from 'emailjs-com';
 
-import './generic.css';
+import './styles/generic.css';
 
 require('dotenv').config()
 var jwt = require('jwt-simple');

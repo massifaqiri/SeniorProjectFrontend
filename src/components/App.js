@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import {
     BrowserRouter as Router,
     Switch,
@@ -29,8 +28,7 @@ import LostAndFound from "./categories/LostAndFound";
 import Listing from "./categories/Listing";
 import ResetPassword from './ResetPassword';
 
-import Backdoor from "./Bcrypt_Backdoor";
-// console.log(process.env);
+import './styles/App.css';
 
 const getCookie = (cname) => {
   let name = cname + "=";
@@ -121,7 +119,6 @@ const App = () => {
             <Route path="/resetpassword/:email/:token" component={ResetPassword} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
-            <Route path="/backdoor" component={Backdoor} />
           </Switch>
         </div>
         </Router>

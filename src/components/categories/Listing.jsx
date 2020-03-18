@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { Button, Col, Modal, Row } from 'react-bootstrap';
 import { MDBContainer } from "mdbreact";
 
-import "./Listing.css";
+import "./styles/Listing.css";
 
 // Listing: Parent Component which Categories can inherit from
 //  props must include:
