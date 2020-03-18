@@ -17,6 +17,8 @@ class SignIn extends React.Component {
         if (global.customAuth.isAuthenticated) {
             window.location.href = "/";
         }
+        // DEVS: Use if you get locked out of your account like I did XD
+        // bcrypt.hash('Rockie', 10, function(err,hash){console.log(hash)});
     }
 
     // check email exists and password is correct
