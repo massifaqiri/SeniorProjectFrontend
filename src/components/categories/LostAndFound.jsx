@@ -5,7 +5,7 @@ import Listing from './Listing';
 import S3FileUpload from 'react-s3';
 
 // Style
-import './Listing.css';
+import './styles/Listing.css';
 
 const config = {
     bucketName: 'campus-share-files',

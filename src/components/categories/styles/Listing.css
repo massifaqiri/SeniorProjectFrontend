@@ -31,6 +31,10 @@ h1 {
     color: "#FF533D";
 }
 
+.horizontalScroll {
+    overflow: scroll;
+}
+
 .infoCard {
     margin-bottom: 1%;
     height: 87%;
@@ -74,5 +78,5 @@ h1 {
 }
 
 .uploadPreview {
-    width: 100%;
+    width: 100px;
 }
