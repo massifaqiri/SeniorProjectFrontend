@@ -21,8 +21,8 @@ const GOOGLE_BOOKS_API_KEY = "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M";
 class Textbooks extends React.Component {
     constructor(props) {
         super(props);
-        // States set below: errMsg, file, fileLocalLocation, fileS3URL, gbMsg, bookOptions
-        this.state = { items: [], showModal: false }
+        // States set below: bookOptions, errMsg, file, fileURL, gbMsg
+        this.state = { dataSent: false, fileLocalLocation: '', fileS3URL: '', items: [], showModal: false, uploadImage: false }
     };
 
     componentDidMount = async () => {
@@ -78,7 +78,7 @@ class Textbooks extends React.Component {
     }
 
     // Modal Functions 
-    handleModalClose = () => {this.setState({showModal: false, file: null, fileLocalLocation: null, fileS3URL: null, gbMsg: null, bookOptions: null})};
+    handleModalClose = () => {this.setState({showModal: false, dataSent: false, file: null, errMsg: null, fileLocalLocation: null, fileS3URL: null, fileURL: null, gbMsg: null, bookOptions: null, uploadImage: false})};
     handleModalShow = () => {this.setState({showModal: true})};
 
     // Sends book info from Add Listing Modal to DB & refreshes the component
@@ -100,14 +100,23 @@ class Textbooks extends React.Component {
             this.setState({errMsg: "Please provide a loan start for this book"});
         } else if (loan_end && (loan_end < loan_start)) {
             this.setState({errMsg: "Please provide a valid loan end (currently set to before start)"});
-        } else if (!this.state.file) {
-            this.setState({errMsg: "Please provide an image of your book (shows condition)"});
+        } else if (!course) {
+            this.setState({errMsg: "Please provide a course name for this book"})
+        } else if (this.state.uploadImage && !this.state.fileLocalLocation) {
+            this.setState({errMsg: "Please upload an image of your book or autopopulate with Google Books"});
         } else {
+            this.setState({dataSent: true});
             this.setState({errMsg: null});
-            await this.uploadToS3();
+            let image_url;
+            if (this.state.file) {
+                await this.uploadToS3();
+                image_url = this.state.fileS3URL;
+            } else {
+                image_url = this.state.fileURL;
+            }
 
             // Save to DB
-            let url = `${global.insertAPI}table=Textbooks&field=book_title,book_author,book_isbn,loan_start,loan_end,course,owner,book_image&value='${title}','${author}','${isbn}','${loan_start}','${loan_end}','${course}','${global.customAuth.email}','${this.state.fileS3URL}'`;
+            let url = `${global.insertAPI}table=Textbooks&field=book_title,book_author,book_isbn,loan_start,loan_end,course,owner,book_image&value='${title}','${author}','${isbn}','${loan_start}','${loan_end}','${course}','${global.customAuth.email}','${image_url.replace(/&/g, 'AMPERSAND')}'`;
             console.log(url);
             await fetch(url, {
                     method: 'GET',
@@ -152,10 +161,7 @@ class Textbooks extends React.Component {
         }
         this.refs.isbn.value = (isbn || "XXX-X-XXX-XXXXX-X")
         let image = searchOption.volumeInfo.imageLinks.thumbnail;
-        if (!image) {
-            image = "https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png";
-        }
-        this.setState({fileLocalLocation: image});
+        this.setState({fileURL: image});
     }
 
     // TODO: Edit this with new request/notification system (Massi's wheelhouse)
@@ -217,7 +223,7 @@ class Textbooks extends React.Component {
                         >
                             <MDBBtn className="listingBtn">
                                 <figure className="floatLeft">
-                                    <img className="listingImg" src={item.book_image||"https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png"} alt="Thumbnail"/>
+                                    <img className="listingImg" src={item.book_image.replace(/AMPERSAND/g, '&')||"https://cdn0.iconfinder.com/data/icons/reading-5/384/Generic_book_file_type-512.png"} alt="Thumbnail"/>
                                     <figcaption>{item.book_title}</figcaption>
                                 </figure>
                             </MDBBtn>
@@ -295,11 +301,17 @@ class Textbooks extends React.Component {
                                     <Form.Label>ISBN</Form.Label>
                                     <Form.Control type="text" ref="isbn" placeholder="XXX-X-XXX-XXXXX-X"/>
                                 </Form.Group>
-                                <Form.Group>
-                                    <Form.Label>Image</Form.Label>
-                                    <Form.Control type="file" required={false} onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png"/>
-                                </Form.Group>
-                                {/* {this.state.fileLocalLocation !== null && (<img src={this.state.fileLocalLocation} alt="" className="uploadPreview"/>)} */}
+                                {this.state.uploadImage
+                                  ? <Fragment>
+                                        <Form.Group>
+                                            <Form.Label>Image</Form.Label>
+                                            <Form.Control type="file" required={false} onChange={this.handleImageUpload} accept="image/gif, image/jpeg, image/png"/>
+                                            {this.state.fileLocalLocation !== null && (<img src={this.state.fileLocalLocation} alt="" className="uploadPreview"/>)}
+                                        </Form.Group>
+                                        <Button onClick={() => {this.setState({uploadImage: false, file: null, fileLocalLocation: null})}}>Cancel</Button>
+                                    </Fragment>
+                                  : <Button onClick={() => {this.setState({uploadImage: true})}}>Upload Custom Image</Button>
+                                }
                             </Col>
                             <Col>
                                 <Form.Group>
@@ -317,9 +329,12 @@ class Textbooks extends React.Component {
                             </Col>
                         </Row>
                         <p>{this.state.errMsg}</p>
-                        <Button variant="success" onClick={this.handleSubmit}>
-                            Submit
-                        </Button>
+                        {this.state.dataSent
+                          ? <Fragment><Spinner/><p>Adding Listing...</p></Fragment>
+                          : <Button variant="success" onClick={this.handleSubmit}>
+                                Submit
+                            </Button>
+                        }
                     </Form>
                 </Modal.Body>
             </Modal>

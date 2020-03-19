@@ -81,7 +81,7 @@ class SignIn extends React.Component {
                         <Form.Group as={Row}>
                             {/* Option for Resetting Password --> will need email functionality! */}
                             <Col sm={{span: 10, offset:2}}>
-                                <a className="tinytext" href="/recoverpassword">Reset Password</a>
+                                <a className="tinytext" href="/forgotpassword">Reset Password</a>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId="staySignedIn">

@@ -19,7 +19,7 @@ import CreateAccount from "./CreateAccount";
 // Private Pages
 import Home from "./Home";
 import Profile from "./Profile";
-import RecoverPassword from "./RecoverPassword";
+import ForgotPassword from "./ForgotPassword";
 
 // Category Pages
 import Textbooks from "./categories/Textbooks";
@@ -114,7 +114,7 @@ const App = () => {
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />
             {/* Keep a logged-in user from accessing? */}
-            <Route path="/recoverpassword" component={RecoverPassword} />
+            <Route path="/forgotpassword" component={ForgotPassword} />
             {/* Reset Password -- not logged in, but need a JSON Web Token to access */}
             <Route path="/resetpassword/:email/:token" component={ResetPassword} />
             {/* Private Pages */}
