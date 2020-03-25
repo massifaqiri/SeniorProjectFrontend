@@ -1,7 +1,7 @@
 import React from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import Image from 'react-bootstrap/Image'
-import "./Slideshow.css";
+import "./styles/Slideshow.css";
 
 
 function ControlledCarousel() {

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { Button, Col, Toast } from 'react-bootstrap';
-import "./Landing.css";
+import "./styles/Landing.css";
 // import UserDetailsModal from './components/UserDetailsModal';
 
 const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
