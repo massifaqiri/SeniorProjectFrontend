@@ -90,7 +90,7 @@ class Categories extends React.Component {
                         </Nav.Link>
                     </Col>
                     <Col xs={4} sm={3} md={3} lg={2} xl={3}>
-                        <Nav.Link href="categories" className="nounderline">
+                        <Nav.Link href="skill" className="nounderline">
                             <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/skills.png" className="categoryImg"/>
                                 <figcaption className="categoryFigcaption">Skills</figcaption>
@@ -114,7 +114,7 @@ class Categories extends React.Component {
                         </Nav.Link>
                     </Col>
                     <Col xs={4} sm={3} md={3} lg={2} xl={3}>
-                        <Nav.Link href="categories" className="nounderline">
+                        <Nav.Link href="transport" className="nounderline">
                             <figure className="categoryFigure">
                                 <Image src="https://campus-share-files.s3.us-east-2.amazonaws.com/transportation.png" className="categoryImg"/>
                                 <figcaption className="categoryFigcaption">Transportation</figcaption>

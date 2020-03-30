@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { Button, InputGroup, Form, Row, Col, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn } from "mdbreact";
-import "./Listing.css";
 
 class Skill extends React.Component {
     constructor(props) {
