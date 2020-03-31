@@ -1,7 +1,6 @@
 import React, { Fragment } from 'react';
 import { Button, Form, Col, InputGroup, Row, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn } from "mdbreact";
-import "./Listing.css";
 
 class Transport extends React.Component {
     constructor(props) {
