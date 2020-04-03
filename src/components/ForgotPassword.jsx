@@ -44,6 +44,8 @@ class ForgotPassword extends React.Component {
             .catch(err => this.setState({serverErrorMsg: err.message}));
             if (this.state.accountExists){
                 this.sendEmail(email);
+            } else {
+                this.setState({});
             }
         }
     }

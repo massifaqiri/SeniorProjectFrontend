@@ -136,21 +136,21 @@ class Textbooks extends React.Component {
             }
         }
     }
-
-    // User Selects Search Option
-    // populateFromGB: populate ref fields with search result
+    
+    // populateFromGB: populate input fields with Google Books search result
     populateFromGB = async (searchOption) => {
-        //id
-        //volumeInfo
-          //title
-          //subtitle?
-          //authors
-          //industryIdentifiers
-            //type (ISBN_10, ISBN_13, OTHER)
-          //imageLinks
-            //thumbnail
+        /*Google Books Single Volume JSON Structure
+        id
+        volumeInfo
+          title
+          authors
+          industryIdentifiers
+            type (ISBN_10, ISBN_13, OTHER)
+          imageLinks
+            thumbnail
+        */
         
-        // Set Ref Values
+        // Set input fields (title, author, isbn) to search results
         this.refs.title.value = searchOption.volumeInfo.title;
         this.refs.author.value = searchOption.volumeInfo.authors.join(', ');
         let isbn = null;
@@ -160,6 +160,8 @@ class Textbooks extends React.Component {
             }
         }
         this.refs.isbn.value = (isbn || "XXX-X-XXX-XXXXX-X")
+        
+        // Set image state to search result thumbnail
         let image = searchOption.volumeInfo.imageLinks.thumbnail;
         this.setState({fileURL: image});
     }
