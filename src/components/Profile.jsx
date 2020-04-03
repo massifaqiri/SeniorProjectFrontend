@@ -1,82 +1,93 @@
-import React, { Fragment } from "react"; //useState
-import { Button, Col, Form } from "react-bootstrap"; // Modal
+// src/components/Profile.js
 
-// Custom Imports
-import "./styles/Profile.css";
+import React, { useState, Fragment } from "react"; //useState
+import { Button, Col, Modal, Row} from "react-bootstrap"; // Modal
+// import UserDetails_Modal from "./UserDetails_Modal";
 
-const bcrypt = require('bcryptjs');
+import "./Profile.css";
+import ResetPassword from "./ResetPassword";
 
-class Profile extends React.Component {
+const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 
-  constructor(props) {
-    super(props);
-    this.state = { errMsg: null, reset: false }
+const Profile = (props) => {
+
+  // TODO: Add "change password"
+  
+  let email = "";
+
+  const [showModal, setShow] = useState(false);
+
+  function handleShow() {
+    fetchUserData(email);
+    setShow(true);
+  };
+
+  function handleClose() {
+    setShow(false);
+  };
+
+  const saveChanges = async() => {
+    // to determine if an update to the database is necessary:
+    // check values of current selections against userdata variable
+    handleClose();
   }
 
-  changePassword = async () => {
-    let newPassword = this.refs.newPassword.value;
-    let verifyPassword = this.refs.verifyPassword.value;
-    if (newPassword) {
-      if (verifyPassword){
-        if (newPassword === verifyPassword) {
-          if (this.state.errMsg) {
-            this.setState({errMsg: null});
-          }
-          
-          // Encrypt newPassword
-          let hash = bcrypt.hashSync(newPassword, 10);
-          console.log(hash);
-
-          // Save to DB
-          let url = `${global.updateAPI}table=Users&field=password&value='${hash}'&condition=email='${global.customAuth.email}'`;
-          await fetch(url, {
-              method: 'GET',
-              headers: {
-                'x-api-key': process.env.REACT_APP_API_KEY,
-              }
-            })
-            .then(response => response.json())
-            .then(res => this.setState({reset: true}))
-            .catch(err => this.setState({errMsg: err.message}));
-
-          // Sign out and redirect to /signin?
-        } else {
-          this.setState({errMsg: "Passwords do not match."})
-        }
-      } else {
-        this.setState({errMsg: "Please retype your password."})
-      }
-    } else {
-      this.setState({errMsg: "Please enter a password."})
-    }
+  // Retrieve current user data from DB and store in userdata
+  let userdata;
+  async function fetchUserData(user_email) {
+    await fetch(`${backendURL}/userdata`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+          email: user_email
+      })
+    })
+    .then(response => response.json())
+    .then(data => userdata = data);
   }
 
+  let majors = ["Accounting", "Africana Studies", "Allied Health Sciences", "Anthropology", "Art", 
+                  "Biblical Languages", "Biology",
+                  "Chemistry", "Classics", "Communication Studies", "Computer Science",
+                  "Data Science",
+                  "Economics", "Elementary Education", "English", "Environmental Studies", "Exercise Science", 
+                  "French",
+                  "German",
+                  "Health Promotion",
+                  "History",
+                  "International Studies",
+                  "Management", "Mathematics", "Mathematics/Statistics", "Music"," Music education",
+                  "Neuroscience", "Nordic Studies", "Nursing", 
+                  "Philosophy", "Physics", "Political science", "Psychology",
+                  "Religion",
+                  "Social work", "Sociology", "Spanish",
+                  "Theatre",
+                  "Visual Communication",
+                  "Women and Gender Studies"]
+  let majors_options = [];
+  for (var i = 0; i < majors.length; i++) {
+      majors_options.push(<option key={majors[i]}>{majors[i]}</option>)
+  }
 
-  render() {
-    return (
-      <Fragment>
-        <h1>Profile Page</h1>
-        <Col xs={12} s={12} m={8} lg={6} xl={6}>
-          <Form>
-            <Form.Group>
-              <Form.Control type="text" readOnly value="Change Password"/>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>New Password</Form.Label>
-              <Form.Control required type="password" ref="newPassword" placeholder="Password"/>
-            </Form.Group>
-            <Form.Group>
-              <Form.Label>Retype Password</Form.Label>
-              <Form.Control required type="password" ref="verifyPassword" placeholder="Retype Password"/>
-            </Form.Group>
-            {this.state.reset && (<p>Password Reset! Please sign in: <a href="/signin">Log in</a></p>)}
-            <p>{this.state.errMsg}</p>
-            <Button onClick={this.changePassword}>Change</Button>
-          </Form>
+  return (
+    <Fragment>
+      <h1>Profile Page</h1>
+      <Row>
+        <Col>
+          <p>Change Password</p>
+          <ResetPassword />
         </Col>
-      </Fragment>
-    );
-  }
+        <Col>
+          <p>Details</p>
+          <p>{userdata}</p>
+          <Button onClick={handleShow}>Edit</Button>
+          <Modal show={showModal}>
+            <Button onClick={saveChanges}>Save</Button>
+          </Modal>
+        </Col>
+      </Row>
+    </Fragment>
+  );
 };
 
 export default Profile;

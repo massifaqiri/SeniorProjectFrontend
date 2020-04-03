@@ -1,4 +1,5 @@
 import React from 'react';
+import './App.css';
 import {
     BrowserRouter as Router,
     Switch,
@@ -19,7 +20,7 @@ import CreateAccount from "./CreateAccount";
 // Private Pages
 import Home from "./Home";
 import Profile from "./Profile";
-import ForgotPassword from "./ForgotPassword";
+import RecoverPassword from "./RecoverPassword";
 
 // Category Pages
 import Textbooks from "./categories/Textbooks";
@@ -30,7 +31,8 @@ import LostAndFound from "./categories/LostAndFound";
 import Listing from "./categories/Listing";
 import ResetPassword from './ResetPassword';
 
-import './styles/App.css';
+import Backdoor from "./Bcrypt_Backdoor";
+// console.log(process.env);
 
 const getCookie = (cname) => {
   let name = cname + "=";
@@ -119,11 +121,12 @@ const App = () => {
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />
             {/* Keep a logged-in user from accessing? */}
-            <Route path="/forgotpassword" component={ForgotPassword} />
+            <Route path="/recoverpassword" component={RecoverPassword} />
             {/* Reset Password -- not logged in, but need a JSON Web Token to access */}
             <Route path="/resetpassword/:email/:token" component={ResetPassword} />
             {/* Private Pages */}
             <PrivateRoute path="/profile" component={Profile} />
+            <Route path="/backdoor" component={Backdoor} />
           </Switch>
         </div>
         </Router>
