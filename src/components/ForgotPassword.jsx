@@ -3,12 +3,12 @@ import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import emailjs from 'emailjs-com';
 
-import './generic.css';
+import './styles/generic.css';
 
 require('dotenv').config()
 var jwt = require('jwt-simple');
 
-class RecoverPassword extends React.Component {
+class ForgotPassword extends React.Component {
     
     constructor(props) {
         super(props);
@@ -18,39 +18,22 @@ class RecoverPassword extends React.Component {
                        serverErrorMsg: '',
                        userEmail: '',
                        userErrorMsg: ''}
-        this.confirmAccountExists = this.confirmAccountExists.bind(this);
-        this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(event) {
-        this.setState({userEmail: event.target.value.toLowerCase()});
-    }
+    // Restrict user email entry to lowercase letters
+    handleChange(event) {this.setState({userEmail: event.target.value.toLowerCase()})};
 
-    // Reset states on page reload
-    componentDidMount(){
-        // console.log(this.state.userEmail);
-        // if (this.state.userEmail !== '') {
-        //     let url = `${global.selectAPI}table=Users&field=*&condition=email='${this.state.userEmail}'`
-        //     fetch(url, {
-        //         method: 'GET',
-        //         headers: {
-        //             'x-api-key': process.env.REACT_APP_API_KEY,
-        //         }
-        //     })
-        //     .then(response => response.json())
-        //     .then(object => this.setState({accountExists: (object.length > 0), hashedPassword: object[0].password}))
-        //     .catch(err => this.setState({serverErrorMsg: err.message}));
-        //     this.sendEmail(this.state.email);
-        // }
-        this.setState({accountExists: false, emailSent: false, hashedPassword: '', serverErrorMsg: '', userErrorMsg: ''});
-    }
-
-    // Query DB for email
-    confirmAccountExists = async (event) => {
-        let norsekey = this.refs.email.value;
-        if (norsekey === "") {
-            this.setState({errorMessage: "Norsekey is missing."})
+    // Verify Provided Email is associated with an Account
+    confirmAccountExists = async () => {
+        let norsekey = this.state.userEmail;
+        if (norsekey === '') {
+            this.setState({userErrorMsg: 'Norsekey is missing.'})
         } else {
+            // Clear User Error Message
+            if (this.state.userErrorMsg) {
+                this.setState({userErrorMsg: ''})
+            }
+            // Query DB for email
             let email = `${norsekey}@luther.edu`;
             await fetch(`${global.selectAPI}table=Users&field=*&condition=email='${email}'`, {
                 method: 'GET',
@@ -59,13 +42,11 @@ class RecoverPassword extends React.Component {
             .then(response => response.json())
             .then(object => this.setState({accountExists: (object.length > 0), hashedPassword: object[0].password}))
             .catch(err => this.setState({serverErrorMsg: err.message}));
-            this.sendEmail(email);
+            if (this.state.accountExists){
+                this.sendEmail(email);
+            }
         }
     }
-
-    // confirmAccountExists = event => {
-    //     this.setState({userEmail: this.refs.email.value});
-    // }
 
     // emailjs-com & jwt-simple
     sendEmail = async (email) => {
@@ -104,7 +85,7 @@ class RecoverPassword extends React.Component {
     render() {
         return (
             <div>
-                <p>Please enter your email to recover your password.</p>
+                <p>Please enter your email to reset your password.</p>
                 <Form>
                     <Form.Group as={Row}>
                         <Form.Label column xs={12} sm={12} md={1} lg={1} xl={1}>Email</Form.Label>
@@ -116,12 +97,12 @@ class RecoverPassword extends React.Component {
                                     </InputGroup.Append>
                             </InputGroup>
 
-                            {this.state.userErrorMsg !== '' && (
+                            {this.state.userErrorMsg && (
                                 <InputGroup>
                                     <Form.Control type="text" className="errorMsg" readOnly defaultValue={this.state.userErrorMsg}/>
                                 </InputGroup>
                             )}
-                            {this.state.serverErrorMsg !== '' && (
+                            {this.state.serverErrorMsg && (
                                 <div className="errorMsg">
                                     <p>Uff da! We've encountered the following error:</p>
                                     <p>{this.state.serverErrorMsg}</p>
@@ -136,7 +117,7 @@ class RecoverPassword extends React.Component {
                         </Col>
                     </Form.Group>
                     <Button variant="primary" onClick={this.confirmAccountExists}>
-                        Recover Password
+                        Send Recovery Email
                     </Button>
                 </Form>
         </div>
@@ -144,4 +125,4 @@ class RecoverPassword extends React.Component {
     }
 }
 
-export default RecoverPassword;
+export default ForgotPassword;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
-import './SignIn.css';
+import './styles/SignIn.css';
 
 const bcrypt = require('bcryptjs');
 
@@ -17,6 +17,8 @@ class SignIn extends React.Component {
         if (global.customAuth.isAuthenticated) {
             window.location.href = "/";
         }
+        // DEVS: Use if you get locked out of your account like I did XD
+        // bcrypt.hash('Rockie', 10, function(err,hash){console.log(hash)});
     }
 
     // check email exists and password is correct
@@ -79,7 +81,7 @@ class SignIn extends React.Component {
                         <Form.Group as={Row}>
                             {/* Option for Resetting Password --> will need email functionality! */}
                             <Col sm={{span: 10, offset:2}}>
-                                <a className="tinytext" href="/recoverpassword">Reset Password</a>
+                                <a className="tinytext" href="/forgotpassword">Reset Password</a>
                             </Col>
                         </Form.Group>
                         <Form.Group as={Row} controlId="staySignedIn">
