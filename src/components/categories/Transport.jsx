@@ -170,7 +170,7 @@ class Transport extends React.Component {
                     <Modal.Body>
                         <Col>
                             <InputGroup>
-                                <InputGroup.Prepend><InputGroup.Text>Car Name</InputGroup.Text></InputGroup.Prepend>
+                                <InputGroup.Prepend><InputGroup.Text>Name</InputGroup.Text></InputGroup.Prepend>
                                 <Form.Control type="text" ref="car_title" placeholder="Enter Name Here" />
                             </InputGroup>
                             <InputGroup>
