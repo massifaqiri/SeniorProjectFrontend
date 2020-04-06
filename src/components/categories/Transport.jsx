@@ -50,7 +50,7 @@ class Transport extends React.Component {
         let car_title = this.refs.car_title.value;
         let car_make = this.refs.car_make.value;
         let car_model = this.refs.car_model.value;
-        let car_desintation = this.refs.car_desintation.value;
+        let car_desintation = this.refs.car_destination.value;
         let car_time = this.refs.car_time.value;
         if (!car_title) {
             this.setState({errMsg: "Please provide a title for this item"});
