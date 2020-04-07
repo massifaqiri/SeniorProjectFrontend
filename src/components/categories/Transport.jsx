@@ -16,7 +16,6 @@ class Transport extends React.Component {
         // this.sendRequest = this.sendRequest.bind(this);
     };
     // componentWillMount 
-
     componentDidMount(){this.fetchCar();}
 
     deleteItem = async (car_id) => {
