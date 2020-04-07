@@ -11,7 +11,7 @@ class Transport extends React.Component {
         this.fetchCar = this.fetchCar.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
-        // this.deleteItem = this.deleteItem.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
         // this.handleSubmit = this.handleSubmit.bind(this);
         // this.sendRequest = this.sendRequest.bind(this);
     };
@@ -140,6 +140,9 @@ class Transport extends React.Component {
                                                 <MDBPopoverBody>
                                                     <p style={{display:"none"}} ref="itemID">{item.car_id}</p>
                                                     <p className="p">{item.car_title}</p>
+                                                    <p className="p">{item.car_make}</p>
+                                                    <p className="p">{item.car_model}</p>
+                                                    <p className="p">{item.car_destination}</p>
                                                     <p className="p">{item.car_time}</p>
                                                     {global.customAuth.email !== '' && (
                                                         <Fragment>
@@ -187,7 +190,7 @@ class Transport extends React.Component {
                             </InputGroup>
                             <InputGroup>
                                 <InputGroup.Prepend><InputGroup.Text>Car Time</InputGroup.Text></InputGroup.Prepend>
-                                <Form.Control type="text" ref="car_time" placeholder="Enter Time Here" />
+                                <Form.Control type="text" ref="car_time" placeholder="Enter Time : 0000-00-00 " />
                             </InputGroup>
                         </Col>
 

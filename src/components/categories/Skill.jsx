@@ -11,7 +11,7 @@ class Skill extends React.Component {
         this.fetchSkill = this.fetchSkill.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
-        // this.deleteItem = this.deleteItem.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
         // this.handleSubmit = this.handleSubmit.bind(this);
         // this.sendRequest = this.sendRequest.bind(this);
     };
@@ -28,7 +28,7 @@ class Skill extends React.Component {
             })
             .then(response => response.json())
             .catch(err => console.log(err));
-        this.fetchItems();
+        this.fetchSkill();
     };
 
     // fetchSkill: retrieves current listings from Transport table
