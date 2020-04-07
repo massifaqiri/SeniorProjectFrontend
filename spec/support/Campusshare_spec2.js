@@ -22,15 +22,4 @@
 //         })
 //     });
 
-//     // it('renders without crashing',function(done){
-//     //     const div = document.createElement('div');
-//     //     ReactDOM.render(App, div);
-//     //     done();
-//     // });
-
-//     // it('Should have a picture on misc. page',function(done){
-//     //     let element = this.driver.findElements(selenium.By.css('figcaption'));
-//     //     expect(element.size()).toBe(6);
-//     //     done();
-//     // });
 // })
