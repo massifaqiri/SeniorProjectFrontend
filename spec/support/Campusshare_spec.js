@@ -1,26 +1,26 @@
-// const selenium = require('selenium-webdriver');
+const selenium = require('selenium-webdriver');
 
-// describe('Campus Share Tests',function(){
-//     jasmine.DEFAULT_TIMEOUT_INTERVAL=100000;
-//     beforeEach(function(done){
-//         this.driver = new selenium.Builder()
-//             .withCapabilities(selenium.Capabilities.chrome())
-//             .build();
-//         this.driver.get('https://www.campus-share.com/misc')
-//             .then(done);
-//     });
+describe('Campus Share Tests',function(){
+    jasmine.DEFAULT_TIMEOUT_INTERVAL=100000;
+    beforeEach(function(done){
+        this.driver = new selenium.Builder()
+            .withCapabilities(selenium.Capabilities.chrome())
+            .build();
+        this.driver.get('https://www.campus-share.com/misc')
+            .then(done);
+    });
 
-//     afterEach(function(done){
-//         this.driver.quit().then(done);
-//     });
-
-//     it('Should be on the misc. category page',function(done){
-//         let element = this.driver.findElement(selenium.By.className('categoryName'));
-//         element.getAttribute('textContent').then(function(v){
-//             expect(v).toBe('Misc');
-//             done();
-//         })
-//     });
+    afterEach(function(done){
+        this.driver.quit().then(done);
+    });
+    
+    it('Should be on the misc. category page',function(done){
+        let element = this.driver.findElement(selenium.By.className('categoryName'));
+        element.getAttribute('textContent').then(function(v){
+            expect(v).toBe('Misc');
+            done();
+        })
+    });
 
     // it('Should be on the transport category page',function(done){
     //     let element = this.driver.findElement(selenium.By.className('categoryName'));
@@ -41,4 +41,4 @@
     //     expect(element.size()).toBe(6);
     //     done();
     // });
-//})
+})

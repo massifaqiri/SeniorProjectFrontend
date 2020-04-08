@@ -11,7 +11,7 @@ class Skill extends React.Component {
         this.fetchSkill = this.fetchSkill.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
-        // this.deleteItem = this.deleteItem.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
         // this.handleSubmit = this.handleSubmit.bind(this);
         // this.sendRequest = this.sendRequest.bind(this);
     };
@@ -28,7 +28,7 @@ class Skill extends React.Component {
             })
             .then(response => response.json())
             .catch(err => console.log(err));
-        this.fetchItems();
+        this.fetchSkill();
     };
 
     // fetchSkill: retrieves current listings from Transport table
@@ -49,6 +49,7 @@ class Skill extends React.Component {
     handleSubmit = async () => {
         let skill_title = this.refs.skill_title.value;
         let skill_description = this.refs.skill_description.value;
+        console.log(skill_title, skill_description);
         if (!skill_title) {
             this.setState({errMsg: "Please provide a title for this item"});
         } else if (!skill_description) {
@@ -69,30 +70,8 @@ class Skill extends React.Component {
         }
     }
 
-    // handleSubmit: sends book info from Add Listing Modal to DB & refreshes the component
-
-    // sendRequest = async (owner, bookID) => {
-    //     if (owner !== global.customAuth.email) {
-    //         let rv = await fetch(`${global.backendURL}/query`, {
-    //             method: "POST",
-    //             headers: { "Content-Type": "application/json"},
-    //             body: JSON.stringify({
-    //                 query: `INSERT INTO Notifications (requester_email, offerer_email, item_id) VALUES ("${this.state.user.email}", "${owner}", "${bookID}");`,
-    //             })
-    //         })
-    //         if (rv.status !== 200) {
-    //             alert("Uff da! Something went wrong, please try again.");
-    //         } else {
-    //             alert("Request successfully sent!")
-    //         }
-    //         console.log(rv);
-    //     } else {
-    //         alert("You are the owner of this title. Please look for another title.")
-    //     }
-    // }
-
     saveToDB = async(skill_title, skill_description) => {
-        let url = `${global.insertAPI}table=Skill&field=skill_title,skill_description,owner&value='${skill_title}','${skill_description}',${global.customAuth.email}'`;
+        let url = `${global.insertAPI}table=Skill&field=skill_title,skill_description,owner&value='${skill_title}','${skill_description}','${global.customAuth.email}'`;
         await fetch(url, {
                     method: 'GET',
                     headers: {

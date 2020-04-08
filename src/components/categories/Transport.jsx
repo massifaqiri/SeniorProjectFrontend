@@ -11,12 +11,12 @@ class Transport extends React.Component {
         this.fetchCar = this.fetchCar.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleModalShow = this.handleModalShow.bind(this);
-        // this.deleteItem = this.deleteItem.bind(this);
+        this.deleteItem = this.deleteItem.bind(this);
         // this.handleSubmit = this.handleSubmit.bind(this);
         // this.sendRequest = this.sendRequest.bind(this);
     };
     // componentWillMount 
-
+    
     componentDidMount(){this.fetchCar();}
 
     deleteItem = async (car_id) => {
@@ -50,7 +50,7 @@ class Transport extends React.Component {
         let car_title = this.refs.car_title.value;
         let car_make = this.refs.car_make.value;
         let car_model = this.refs.car_model.value;
-        let car_desintation = this.refs.car_desintation.value;
+        let car_desintation = this.refs.car_destination.value;
         let car_time = this.refs.car_time.value;
         if (!car_title) {
             this.setState({errMsg: "Please provide a title for this item"});
@@ -140,6 +140,9 @@ class Transport extends React.Component {
                                                 <MDBPopoverBody>
                                                     <p style={{display:"none"}} ref="itemID">{item.car_id}</p>
                                                     <p className="p">{item.car_title}</p>
+                                                    <p className="p">{item.car_make}</p>
+                                                    <p className="p">{item.car_model}</p>
+                                                    <p className="p">{item.car_destination}</p>
                                                     <p className="p">{item.car_time}</p>
                                                     {global.customAuth.email !== '' && (
                                                         <Fragment>
@@ -170,7 +173,7 @@ class Transport extends React.Component {
                     <Modal.Body>
                         <Col>
                             <InputGroup>
-                                <InputGroup.Prepend><InputGroup.Text>Car Name</InputGroup.Text></InputGroup.Prepend>
+                                <InputGroup.Prepend><InputGroup.Text>Name</InputGroup.Text></InputGroup.Prepend>
                                 <Form.Control type="text" ref="car_title" placeholder="Enter Name Here" />
                             </InputGroup>
                             <InputGroup>
@@ -187,7 +190,7 @@ class Transport extends React.Component {
                             </InputGroup>
                             <InputGroup>
                                 <InputGroup.Prepend><InputGroup.Text>Car Time</InputGroup.Text></InputGroup.Prepend>
-                                <Form.Control type="text" ref="car_time" placeholder="Enter Time Here" />
+                                <Form.Control type="text" ref="car_time" placeholder="Enter Time : 0000-00-00 " />
                             </InputGroup>
                         </Col>
 
