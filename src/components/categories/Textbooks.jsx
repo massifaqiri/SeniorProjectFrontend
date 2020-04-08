@@ -167,19 +167,15 @@ class Textbooks extends React.Component {
     // TODO: Edit this with new request/notification system (Massi's wheelhouse)
     sendRequest = async (owner, bookID) => {
         if (owner !== global.customAuth.email) {
-            let response = await fetch(`${global.backendURL}/query`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json"},
-                body: JSON.stringify({
-                    query: `INSERT INTO Notifications (requester_email, offerer_email, item_id, source_table) VALUES ("${global.customAuth.email}", "${owner}", "${bookID}", "Textbooks");`,
-                })
+            let response = await fetch(`${global.insertAPI}table=Notifications&field=requester_email,offerer_email,item_id,status,item_table&value='${global.customAuth.email}','${owner}','${bookID}','pending','Textbooks'`, {
+                method: "GET",
+                headers: { 'x-api-key': process.env.REACT_APP_API_KEY, },
             })
             if (response.status !== 200) {
                 alert("Uff da! Something went wrong, please try again.");
             } else {
                 alert("Request successfully sent!")
             }
-            console.log(response);
         } else {
             alert("You are the owner of this title. Please look for another title.")
         }
