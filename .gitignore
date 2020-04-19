@@ -8,6 +8,7 @@
 
 # testing
 /coverage
+.nyc_output/*
 
 #development
 client/.env

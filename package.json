@@ -27,7 +27,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "nyc mocha ./tests/**/*.test.js -r @babel/register -r ./tests/helpers.js -r ./tests/dom.js --exit",
+    "test": "nyc mocha ./tests/**/*.test.js -r @babel/register -r ./tests/helpers.js -r ./tests/dom.js module:react-native --exit",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
