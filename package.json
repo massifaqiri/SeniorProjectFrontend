@@ -27,7 +27,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "nyc mocha ./tests/**/*.test.js -r @babel/register -r ./tests/helpers.js -r ./tests/dom.js module:react-native --exit",
+    "test": "mocha ./src/tests/**/*.test.js --require babel-register --require ignore-styles",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -59,10 +59,13 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-react-native": "^5.0.2",
     "babel-preset-stage-0": "^6.24.1",
+    "babel-register": "^6.26.0",
     "chai": "^4.2.0",
+    "ignore-styles": "^5.0.1",
     "jsdom": "^16.2.2",
     "mocha": "^7.1.1",
     "nodemon": "^2.0.2",
-    "nyc": "^15.0.1"
+    "nyc": "^15.0.1",
+    "react-test-renderer": "^16.13.1"
   }
 }
