@@ -3,7 +3,7 @@ import { Button, Col, Toast } from 'react-bootstrap';
 import "./styles/Landing.css";
 // import UserDetailsModal from './components/UserDetailsModal';
 
-const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
+//const backendURL = "http://campus-share-backend.us-east-2.elasticbeanstalk.com";
 
 class Landing extends React.Component {
     constructor(props) {
