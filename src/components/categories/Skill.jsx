@@ -123,7 +123,7 @@ class Skill extends React.Component {
                                         >
                                             <MDBBtn className="listingBtn">
                                                 <figure className="floatLeft">
-                                                    {/* <img className="listingImg" src={item.item_img||"https://cdn1.iconfinder.com/data/icons/image-manipulations/100/13-512.png"} alt={item.item_name}/> */}
+                                                    <img className="listingImg" src={"https://cdn1.iconfinder.com/data/icons/image-manipulations/100/13-512.png"} alt="Placeholder"/>
                                                     <figcaption>{item.skill_title}</figcaption>
                                                 </figure>
                                             </MDBBtn>
