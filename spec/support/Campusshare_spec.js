@@ -6,6 +6,28 @@ describe('Campus Share Tests',function(){
         this.driver = new selenium.Builder()
             .withCapabilities(selenium.Capabilities.chrome())
             .build();
+        this.driver.get('https://www.campus-share.com/categories')
+            .then(done);
+    });
+
+    afterEach(function(done){
+        this.driver.quit().then(done);
+    });
+
+    it('Should be on the categories page',function(done){
+        let element = this.driver.findElement(selenium.By.className('row'));
+        element.getAttribute('textContent').then(function(v){
+            expect(v).toBe('HomeAboutHow does it workCategoriesSign In');
+            done();
+        })
+    });
+
+})
+describe('Campus Share Tests',function(){
+    beforeEach(function(done){
+        this.driver = new selenium.Builder()
+            .withCapabilities(selenium.Capabilities.chrome())
+            .build();
         this.driver.get('https://www.campus-share.com')
             .then(done);
     });
@@ -151,6 +173,50 @@ describe('Campus Share Tests',function(){
         let element = this.driver.findElement(selenium.By.className('aboutUs'));
         element.getAttribute('textContent').then(function(v){
             expect(v).toBe('');
+            done();
+        })
+    });
+})
+
+describe('Campus Share Tests',function(){
+    beforeEach(function(done){
+        this.driver = new selenium.Builder()
+            .withCapabilities(selenium.Capabilities.chrome())
+            .build();
+        this.driver.get('https://www.campus-share.com')
+            .then(done);
+    });
+
+    afterEach(function(done){
+        this.driver.quit().then(done);
+    });
+
+    it('Should be on the navbar',function(done){
+        let element = this.driver.findElement(selenium.By.className('App-navBar'));
+        element.getAttribute('textContent').then(function(v){
+            expect(v).toBe('HomeAboutHow does it workCategoriesSign In');
+            done();
+        })
+    });
+})
+
+describe('Campus Share Tests',function(){
+    beforeEach(function(done){
+        this.driver = new selenium.Builder()
+            .withCapabilities(selenium.Capabilities.chrome())
+            .build();
+        this.driver.get('https://www.campus-share.com/signin')
+            .then(done);
+    });
+
+    afterEach(function(done){
+        this.driver.quit().then(done);
+    });
+
+    it('Should be on the sign-in page',function(done){
+        let element = this.driver.findElement(selenium.By.className('row justify-content-center'));
+        element.getAttribute('textContent').then(function(v){
+            expect(v).toBe('Email@luther.eduPlease use your valid luther.edu email.PasswordReset PasswordSign in for 2 weeksSign In');
             done();
         })
     });
