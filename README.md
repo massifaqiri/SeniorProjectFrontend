@@ -3,7 +3,7 @@ Welcome to Campus Share! Here's what we have documented:
 - [X] Dependencies
 - [X] Development Environment Setup
 - [X] Running the Application
-- [ ] Testing
+- [X] Testing
 - [X] Debugging
 
 ## Dependencies
@@ -34,6 +34,20 @@ Tip: you can install [nodemon](https://nodemon.io/) to automatically reload the 
 
 ## Testing
 :construction_worker: Under construction!
+We use [Mocha](https://www.npmjs.com/package/mocha) and [Selenium](https://www.npmjs.com/package/selenium-webdriver) for testing. See specifics below:
+
+Type | Unit | Integration | Functional
+-------------------------------
+Framework | Mocha | Mocha | Selenium
+
+### Unit Tests
+Each component has a seperate unit test to confirm that the component's critical elements render properly.
+References:
+* https://reactjs.org/docs/shallow-renderer.html
+* https://reactjs.org/docs/test-renderer.html
+
+### Functional (Smoke) Tests
+
 
 ## Debugging
 ### Installing dependencies

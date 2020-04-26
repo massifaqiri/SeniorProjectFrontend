@@ -61,34 +61,33 @@ class CreateAccount extends React.Component {
                 <Col sm={12} md={10} lg={8}>
                     <Form>
                         <h3>Welcome to Campus Share!</h3>
-                        {/* <p>Please fill out the following information to enhance your experience.</p> */}
-                    <Form.Group as={Row}>
-                        <Form.Label column sm={2}>Email</Form.Label>
-                        <Col sm={10} md={10} lg={10}>
-                            <InputGroup>
-                                <Form.Control type="text" ref="email" placeholder="norsekey" required />
-                                    <InputGroup.Append>
-                                        <InputGroup.Text id="inputGroupAppend">@luther.edu</InputGroup.Text>
-                                    </InputGroup.Append>
-                            </InputGroup>
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row} controlId="password">
-                        <Form.Label column sm={2}>Password</Form.Label>
-                        <Col sm={10} md={10} lg={10}>                    
-                            <Form.Control type="password" ref="password" placeholder="Password" />
-                        </Col>
-                    </Form.Group>
-                    <p>{this.state.errMsg}</p>
-                    {this.state.accountCreated && (
-                        <p>Account created! Please login here: <a href="/signin">Sign In</a></p>
-                    )}
-                    <Form.Group as={Row}>
-                        <Col sm={{span: 10, offset:2}}>
-                            <Button variant="primary" onClick={this.verifyEmail}>Create Account</Button>
-                        </Col>
-                    </Form.Group>     
-            </Form>
+                        <Form.Group as={Row}>
+                            <Form.Label column sm={2}>Email</Form.Label>
+                            <Col sm={10} md={10} lg={10}>
+                                <InputGroup>
+                                    <Form.Control type="text" ref="email" placeholder="norsekey" required />
+                                        <InputGroup.Append>
+                                            <InputGroup.Text id="inputGroupAppend">@luther.edu</InputGroup.Text>
+                                        </InputGroup.Append>
+                                </InputGroup>
+                            </Col>
+                        </Form.Group>
+                        <Form.Group as={Row} controlId="password">
+                            <Form.Label column sm={2}>Password</Form.Label>
+                            <Col sm={10} md={10} lg={10}>                    
+                                <Form.Control type="password" ref="password" placeholder="Password" />
+                            </Col>
+                        </Form.Group>
+                        <p>{this.state.errMsg}</p>
+                        {this.state.accountCreated && (
+                            <p>Account created! Please login here: <a href="/signin">Sign In</a></p>
+                        )}
+                        <Form.Group as={Row}>
+                            <Col sm={{span: 10, offset:2}}>
+                                <Button variant="primary" onClick={this.verifyEmail}>Create Account</Button>
+                            </Col>
+                        </Form.Group>     
+                    </Form>
                 </Col>
             </div>
         )

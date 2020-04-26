@@ -122,7 +122,7 @@ class ForgotPassword extends React.Component {
                         Send Recovery Email
                     </Button>
                 </Form>
-        </div>
+            </div>
         )
     }
 }

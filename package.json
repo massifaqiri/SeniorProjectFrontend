@@ -27,7 +27,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "mocha ./src/tests/**/*.test.js --require babel-register --require ignore-styles",
+    "test": "mocha ./src/tests/**/*.test.js --require babel-register --require ignore-styles --require 'src/tests/helpers.js'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
