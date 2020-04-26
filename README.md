@@ -154,3 +154,5 @@ We have a number of API and Secret Access Keys. These are defined as environment
 
 * **Example API Calls:**
     * Update a record with a new value for its field into a table: ```?table=Misc&field=item_name&value=ThisItem&condition=item_id=1```
+    * **Special Case of Updating more than one field:** The API is designed to update one field at a time. If you need to update more than one field, you will need to include the field names and values of all other fields before the last field that would be done as instructed above. It is illustrated below: 
+    ```table=Notifications&field=meeting_datetime='10AM Wednesday',meeting_location='Miller Ground floor',status&value='accepted'&condition=notification_id='40'```

@@ -24,6 +24,8 @@ import ForgotPassword from "./ForgotPassword";
 // Category Pages
 import Textbooks from "./categories/Textbooks";
 import Misc from "./categories/Misc";
+import Skill from "./categories/Skill";
+import Transport from "./categories/Transport";
 import LostAndFound from "./categories/LostAndFound";
 import Listing from "./categories/Listing";
 import ResetPassword from './ResetPassword';
@@ -108,9 +110,12 @@ const App = () => {
             <Route path="/textbooks">
               <Textbooks sectionTitle="Textbooks" className="listing" />
             </Route>
+            <Route path="/about" component={About} />
             <Route path="/lostandfound" component={LostAndFound} />
             <Route path="/listing" component={Listing} />
             <Route path="/misc" component={Misc} />
+            <Route path="/skill" component={Skill} />
+            <Route path="/transport" component={Transport} />
             <Route path="/signin" component={SignIn} />
             <Route path="/createaccount" component={CreateAccount} />
             {/* Keep a logged-in user from accessing? */}
