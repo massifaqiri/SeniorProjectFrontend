@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import { Button, Form, Col, InputGroup, Row, Modal, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn } from "mdbreact";
+import emailjs from 'emailjs-com';
 
 class Transport extends React.Component {
     constructor(props) {
@@ -90,6 +91,53 @@ class Transport extends React.Component {
                 .catch(err => console.log(err));
     }
 
+    sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
+        var item_specs;
+        let url = `${global.selectAPI}table=Transport&field=car_destination,car_time&condition=car_id='${item_id}'`;
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
+        .then(response => response.json())
+        .then((json) => {
+            item_specs = json;
+            console.log("Test1", item_specs);
+        })
+        .catch(err => alert(err));
+        // console.log("Test2", `${item_specs[0].skill_title}`);
+        item_specs = `${item_specs[0].car_destination} at ${item_specs[0].car_time}`;
+        console.log("Test3", item_specs);
+        var template_params = {
+            "offerer_email": offerer_emailId,
+            "requester_email": requester_emailId,
+            "item_specs": item_specs
+        }
+        var service_id = "default_service";
+        var template_id = "item_request";
+        var user_id = 'user_2HoBuxXRZPsL1sOa71XLW';
+
+        emailjs.send(service_id, template_id, template_params, user_id)
+        .then(function(response) {
+            console.log('Success!');
+        }, function(error){
+            console.log(error);
+        });
+        
+
+        url = `${global.insertAPI}table=Notifications&field=requester_email,offerer_email,item_specs,item_id,item_table,offerer_status,requester_status&value='${requester_emailId}','${offerer_emailId}','${item_specs}', '${item_id}','Transport', 'pending', 'pending'`;
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
+        .then(response => console.log(response))
+
+        alert('Request Successfully sent!');
+    }
+
     render() {
         return (
             <Fragment>
@@ -152,7 +200,7 @@ class Transport extends React.Component {
                                                             </Fragment>
                                                             : <Fragment>
                                                                 <p className="p" ref="owner">{item.owner}</p>
-                                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.car_id)}>Request</Button>
+                                                                <Button variant="success" size="sm" onClick={() => this.sendEmail(global.customAuth.email, item.owner, item.car_id)}>Request</Button>
                                                             </Fragment>
                                                             }
                                                         </Fragment>

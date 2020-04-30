@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Button, Col, Form, ListGroup, Modal, Row, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn, MDBContainer } from "mdbreact";
 import S3FileUpload from 'react-s3';
+import emailjs from 'emailjs-com';
 
 // Custom imports
 import './styles/Listing.css';
@@ -24,6 +25,54 @@ class Textbooks extends React.Component {
         // States set below: bookOptions, errMsg, file, fileURL, gbMsg
         this.state = { dataSent: false, fileLocalLocation: '', fileS3URL: '', items: [], showModal: false, uploadImage: false }
     };
+
+    sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
+        var item_specs;
+        let url = `${global.selectAPI}table=Textbooks&field=book_title,book_author&condition=book_id='${item_id}'`;
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
+        .then(response => response.json())
+        .then((json) => {
+            item_specs = json;
+            console.log("Test1", item_specs);
+        })
+        .catch(err => alert(err));
+        console.log("Test2", `${item_specs[0].book_title} by ${item_specs[0].book_author}`);
+        item_specs = `${item_specs[0].book_title} by ${item_specs[0].book_author}`;
+
+        console.log("Test3", item_specs);
+        var template_params = {
+            "offerer_email": offerer_emailId,
+            "requester_email": requester_emailId,
+            "item_specs": item_specs
+        }
+        var service_id = "default_service";
+        var template_id = "item_request";
+        var user_id = 'user_2HoBuxXRZPsL1sOa71XLW';
+
+        emailjs.send(service_id, template_id, template_params, user_id)
+        .then(function(response) {
+            console.log('Success!');
+        }, function(error){
+            console.log(error);
+        });
+        
+
+        url = `${global.insertAPI}table=Notifications&field=requester_email,offerer_email,item_specs,item_id,item_table,offerer_status,requester_status&value='${requester_emailId}','${offerer_emailId}','${item_specs}', '${item_id}','Textbooks', 'pending', 'pending'`;
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
+        .then(response => console.log(response))
+
+        alert('Request Successfully sent!');
+    }
 
     componentDidMount = async () => {
         await this.fetchBooks();
@@ -164,23 +213,6 @@ class Textbooks extends React.Component {
         this.setState({fileURL: image});
     }
 
-    // TODO: Edit this with new request/notification system (Massi's wheelhouse)
-    sendRequest = async (owner, bookID) => {
-        if (owner !== global.customAuth.email) {
-            let response = await fetch(`${global.insertAPI}table=Notifications&field=requester_email,offerer_email,item_id,status,item_table&value='${global.customAuth.email}','${owner}','${bookID}','pending','Textbooks'`, {
-                method: "GET",
-                headers: { 'x-api-key': process.env.REACT_APP_API_KEY, },
-            })
-            if (response.status !== 200) {
-                alert("Uff da! Something went wrong, please try again.");
-            } else {
-                alert("Request successfully sent!")
-            }
-        } else {
-            alert("You are the owner of this title. Please look for another title.")
-        }
-    }
-
     uploadToS3 = async () => {
         await S3FileUpload.uploadFile(this.state.file, config)
         .then(data => this.setState({fileS3URL: data.location}))
@@ -234,7 +266,8 @@ class Textbooks extends React.Component {
                                         ( item.owner !== global.customAuth.email
                                             ? <Fragment>
                                                 <p className="p" ref="owner">{item.owner}</p>
-                                                <Button variant="success" size="sm" onClick={() => this.sendRequest(item.owner, item.book_id)}>Request</Button>
+                                                <Button variant="success" size="sm" onClick={() => this.sendEmail(global.customAuth.email, item.owner, item.book_id)}>Request</Button>
+                                                {/* <Button variant="success" size="sm" onClick={() => this.fetchBookInfo(item.book_id)}>Request</Button> */}
                                                 </Fragment>
                                             : <Button variant="danger" size="sm" onClick={() => this.deleteBook(item.book_id)}>Delete</Button>
                                         )
