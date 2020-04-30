@@ -10,7 +10,8 @@ module.exports = {
                 use: {
                     loader: "babel-loader",
                     options: {
-                        presets: ['es2015', 'react']
+                        presets: ["@babel/env", "@babel/react"],
+                        plugins: ["@babel/plugin-proposal-class-properties"]
                     }
                 }
             },

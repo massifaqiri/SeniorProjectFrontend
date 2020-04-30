@@ -1,13 +1,22 @@
-// import React from 'react';
-// import Textbooks from "../../../components/categories/Textbooks";
+import React from 'react';
+import chai from 'chai';
+import chaiJestSnapshot from 'chai-jest-snapshot';
+import renderer from 'react-test-renderer';
+import Textbooks from "../../../components/categories/Textbooks";
 
-// const ShallowRenderer = require('react-test-renderer/shallow');
-// const shallowRenderer = new ShallowRenderer();
-// shallowRenderer.render(<Textbooks />);
-// const result = shallowRenderer.getRenderOutput();
+// chai.use(chaiJestSnapshot);
 
-// describe('Textbooks component unit test', () => {
-//     it('Outer component is a Fragment', () => {
-//         assert.equal(result.type, 'Fragment', 'Textbooks is type div');
-//     });
+// before(function() {
+//     chaiJestSnapshot.resetSnapshotRegistry();
+// });
+
+// beforeEach(function() {
+//     chaiJestSnapshot.configureUsingMochaContext(this);
+// });
+
+// describe("Textbooks Unit Test", function() {
+//     it("Textbooks renders correctly", () => {
+//         const tree = renderer.create(<Textbooks/>).toJSON();
+//         expect(tree).to.matchSnapshot(true);
+//     })
 // });
