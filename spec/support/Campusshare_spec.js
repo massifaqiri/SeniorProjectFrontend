@@ -1,5 +1,5 @@
 const selenium = require('selenium-webdriver');
-jasmine.DEFAULT_TIMEOUT_INTERVAL=10000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL=15000;
 
 describe('Campus Share Tests',function(){
     beforeEach(function(done){
