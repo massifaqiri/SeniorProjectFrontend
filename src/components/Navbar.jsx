@@ -1,13 +1,36 @@
 // src/components/NavBar.js
 
-import React, { Fragment } from "react";
-import { Button, Col, Nav, Navbar, Row } from "react-bootstrap";
+import React, { Fragment, useState} from "react";
+import { Button, Col, Nav, Navbar, Row, Toast } from "react-bootstrap";
 
 import "./styles/Navbar.css";
 
+const getCookie = (cname) => {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+        c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
 const NavBar = () => {
+    const CDCookie = (getCookie("CDCToastRead") === "");
+    const [showToast, setShowToast] = useState(CDCookie);
+    const closeToast = () => {
+        setShowToast(false);
+        document.cookie = "CDCToastRead=true; path=/";
+    };
 
     return (
+        <div>
         <Navbar className="App-navBar" expand="lg" sticky="top">
             <Row>
                 <Col xs={4} sm={4} md={2} lg={2} xl={2}>
@@ -58,6 +81,18 @@ const NavBar = () => {
                 </Col>
             </Row>
         </Navbar>
+        <div className="row justify-content-center">
+            {showToast &&
+                <Toast onClose={closeToast} className="toast_CDC">
+                    <Toast.Header>
+                        <img src={require("./images/CDC_logo.jpg")} alt="CDC Logo" className="img_CDC"/>
+                        <strong className="mr-auto">Information on COVID-19</strong>
+                    </Toast.Header>
+                    <Toast.Body>Please visit the <a href="https://www.cdc.gov/">CDC</a> for the most recent updates</Toast.Body>
+                </Toast>
+            }
+        </div>
+        </div>
     );
 };
 

@@ -1,4 +1,38 @@
 .aboutUs {
-    height: 20%;
-    width: 50%;
+    width: 25%;
+    float: right;
 }
+
+.img_25 {
+    width: 100%;
+}
+
+.caption {
+    text-align: right;
+    font-size: smaller;
+}
+
+.title {
+    color: #FF533D;
+}
+
+.accord_togg {
+    color: #0080fe;
+    text-align: center;
+    font-size: x-large;
+    font-variant: small-caps;
+}
+
+.accord_togg:hover {
+    font-weight: bolder;
+}
+
+.clearfix {
+    overflow: auto;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
