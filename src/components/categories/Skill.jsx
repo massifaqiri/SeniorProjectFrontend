@@ -32,7 +32,7 @@ class Skill extends React.Component {
         this.fetchSkill();
     };
 
-    // fetchSkill: retrieves current listings from Transport table
+    // fetchSkill: retrieves current listings from Skills table
     fetchSkill = async () => {
         await fetch(`${global.selectAPI}table=Skill&field=*`, {
             method: 'GET',
@@ -47,6 +47,7 @@ class Skill extends React.Component {
     handleModalClose = () => {this.setState({showModal: false, file: null})};
     handleModalShow = () => {this.setState({showModal: true})};
 
+    // Sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async () => {
         let skill_title = this.refs.skill_title.value;
         let skill_description = this.refs.skill_description.value;

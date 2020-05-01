@@ -3,6 +3,7 @@ import { Col, Container, Image, Nav, Row } from 'react-bootstrap';
 
 import "./styles/Categories.css";
 
+// Links the different categories to their seperate pages
 class Categories extends React.Component {
 
     render() {

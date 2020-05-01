@@ -47,6 +47,7 @@ class Transport extends React.Component {
     handleModalClose = () => {this.setState({showModal: false, file: null})};
     handleModalShow = () => {this.setState({showModal: true})};
 
+    // Sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async () => {
         let car_title = this.refs.car_title.value;
         let car_make = this.refs.car_make.value;
@@ -106,7 +107,6 @@ class Transport extends React.Component {
             console.log("Test1", item_specs);
         })
         .catch(err => alert(err));
-        // console.log("Test2", `${item_specs[0].skill_title}`);
         item_specs = `${item_specs[0].car_destination} at ${item_specs[0].car_time}`;
         console.log("Test3", item_specs);
         var template_params = {
