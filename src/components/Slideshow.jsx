@@ -3,7 +3,8 @@ import Carousel from 'react-bootstrap/Carousel';
 import Image from 'react-bootstrap/Image'
 import "./styles/Slideshow.css";
 
-
+// This component handles the slideshow on the home page. The images are imported from AWS S3. 
+// The component utilizes Carousel from React-Bootstrap. 
 function ControlledCarousel() {
     const [index, setIndex] = React.useState(0);
     const [direction, setDirection] = React.useState(null);

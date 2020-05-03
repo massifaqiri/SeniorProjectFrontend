@@ -91,6 +91,9 @@ class Transport extends React.Component {
                 .catch(err => console.log(err));
     }
 
+
+    // It sends a request email to the offerer of the item, stating that the requester has requested it.
+    // This function is invoked upon clicking request on any Transport item.
     sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
         var item_specs;
         let url = `${global.selectAPI}table=Transport&field=car_destination,car_time&condition=car_id='${item_id}'`;
@@ -103,12 +106,9 @@ class Transport extends React.Component {
         .then(response => response.json())
         .then((json) => {
             item_specs = json;
-            console.log("Test1", item_specs);
         })
         .catch(err => alert(err));
-        // console.log("Test2", `${item_specs[0].skill_title}`);
         item_specs = `${item_specs[0].car_destination} at ${item_specs[0].car_time}`;
-        console.log("Test3", item_specs);
         var template_params = {
             "offerer_email": offerer_emailId,
             "requester_email": requester_emailId,
@@ -116,9 +116,8 @@ class Transport extends React.Component {
         }
         var service_id = "default_service";
         var template_id = "item_request";
-        var user_id = 'user_2HoBuxXRZPsL1sOa71XLW';
 
-        emailjs.send(service_id, template_id, template_params, user_id)
+        emailjs.send(service_id, template_id, template_params, process.env.REACT_APP_EMAILJS_USER_ID_SECOND)
         .then(function(response) {
             console.log('Success!');
         }, function(error){
