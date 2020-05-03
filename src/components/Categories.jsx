@@ -1,11 +1,12 @@
 import React from 'react';
 import { Col, Container, Image, Nav, Row } from 'react-bootstrap';
-
 import "./styles/Categories.css";
 
-// Links the different categories to their seperate pages
-class Categories extends React.Component {
+// This component handles the Categories page. It imports all categories icons from AWS S3 and renders them.
+// The component divides the page into several rows and columns and fills them with categories, which
+// are routed to their respective pages. 
 
+class Categories extends React.Component {
     render() {
         return (
             <Container>

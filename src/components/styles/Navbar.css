@@ -1,24 +1,29 @@
 /* Have to set background color as the same as App, or the content overlaps */
 .App-navBar {
-    background-color: #F4F4F4;
-  }
+  background-color: #F4F4F4;
+}
 
 .btn-signIn {
-  width: 100%;
+width: 100%;
 }
 
 .btn-signOut {
-  position: relative;
-  margin-left: 10px;
-  width: 100%;
+position: relative;
+margin-left: 10px;
+width: 100%;
 }
 
 .floatRight {
-  position: fixed;
-  right: 0;
-  top: 0;
+position: fixed;
+right: 0;
+top: 0;
 }
 
 .logo {
-  width: 100%;
+width: 100%;
+}
+
+.img_CDC {
+width: 32px;
+height: 32px;
 }

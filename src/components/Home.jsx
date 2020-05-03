@@ -1,34 +1,12 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-
-// Custom Imports
 import "./styles/Home.css";
 import ControlledCarousel from "./Slideshow";
 
+// This is the home page, the first page that the user will see. It contains a simple slideshow 
+// advertising the website. It also contains buttons to Sign Up and Sign In.
+
 class Home extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            exampleAPICallData: [],
-        }
-    }
-
-    componentDidMount() {
-        let url = 'https://h1xqnteg60.execute-api.us-east-2.amazonaws.com/SelectProd?table=Textbooks&field=book_author';
-        fetch(url, {
-            method: 'GET',
-            headers: {
-                'x-api-key': 'dKEhYInqF09xERGUZcQQ3aCKELroAbsk1vVZLhb3',
-            }
-        })
-        .then(res => res.json())
-        .then(json => {
-            this.setState({
-                exampleAPICallData: json,
-            })
-        });
-    }
-
     render() {
         return (
             <div className="Home">

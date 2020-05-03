@@ -5,7 +5,6 @@ import S3FileUpload from 'react-s3';
 import emailjs from 'emailjs-com';
 
 import './styles/Listing.css';
-
 const config = {
     bucketName: 'campus-share-files',
     dirName: 'Misc',
@@ -121,7 +120,8 @@ class Misc extends React.Component {
     }
 
 
-    // sendRequest -> needs ID of item & source table
+    // It sends a request email to the offerer of the item, stating that the requester has requested it.
+    // This function is invoked upon clicking request on any Misc. item.
     sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
         var item_specs;
         let url = `${global.selectAPI}table=Misc&field=item_name,item_desc&condition=item_id='${item_id}'`;
@@ -134,13 +134,10 @@ class Misc extends React.Component {
         .then(response => response.json())
         .then((json) => {
             item_specs = json;
-            console.log("Test1", item_specs);
         })
         .catch(err => alert(err));
-        console.log("Test2", `${item_specs[0].item_name} with description: ${item_specs[0].item_desc}`);
         item_specs = `${item_specs[0].item_name} with description: ${item_specs[0].item_desc}`;
 
-        console.log("Test3", item_specs);
         var template_params = {
             "offerer_email": offerer_emailId,
             "requester_email": requester_emailId,
@@ -148,16 +145,14 @@ class Misc extends React.Component {
         }
         var service_id = "default_service";
         var template_id = "item_request";
-        var user_id = 'user_2HoBuxXRZPsL1sOa71XLW';
 
-        emailjs.send(service_id, template_id, template_params, user_id)
+        emailjs.send(service_id, template_id, template_params, process.env.REACT_APP_EMAILJS_USER_ID_SECOND)
         .then(function(response) {
             console.log('Success!');
         }, function(error){
             console.log(error);
         });
         
-
         url = `${global.insertAPI}table=Notifications&field=requester_email,offerer_email,item_specs,item_id,item_table,offerer_status,requester_status&value='${requester_emailId}','${offerer_emailId}','${item_specs}', '${item_id}','Misc', 'pending', 'pending'`;
         await fetch(url, {
             method: 'GET',
@@ -166,7 +161,6 @@ class Misc extends React.Component {
             }      
         })
         .then(response => console.log(response))
-
         alert('Request Successfully sent!');
     }
 
