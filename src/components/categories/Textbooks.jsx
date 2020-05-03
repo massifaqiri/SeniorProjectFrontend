@@ -6,6 +6,7 @@ import emailjs from 'emailjs-com';
 
 // Custom imports
 import './styles/Listing.css';
+require('dotenv').config()
 
 const config = {
     bucketName: 'campus-share-files',
@@ -16,7 +17,7 @@ const config = {
 };
 
 const googleAPI = "https://www.googleapis.com/books/v1/volumes";
-const GOOGLE_BOOKS_API_KEY = "AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M";
+const googleAPIKey = 'AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M'
 
 // Add objects parameter; list of lists (info for InfoCards)
 class Textbooks extends React.Component {
@@ -26,6 +27,8 @@ class Textbooks extends React.Component {
         this.state = { dataSent: false, fileLocalLocation: '', fileS3URL: '', items: [], showModal: false, uploadImage: false }
     };
 
+    // It sends a request email to the offerer of the item, stating that the requester has requested it.
+    // This function is invoked upon clicking request on any Textbook item.
     sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
         var item_specs;
         let url = `${global.selectAPI}table=Textbooks&field=book_title,book_author&condition=book_id='${item_id}'`;
@@ -38,13 +41,10 @@ class Textbooks extends React.Component {
         .then(response => response.json())
         .then((json) => {
             item_specs = json;
-            console.log("Test1", item_specs);
         })
         .catch(err => alert(err));
-        console.log("Test2", `${item_specs[0].book_title} by ${item_specs[0].book_author}`);
         item_specs = `${item_specs[0].book_title} by ${item_specs[0].book_author}`;
 
-        console.log("Test3", item_specs);
         var template_params = {
             "offerer_email": offerer_emailId,
             "requester_email": requester_emailId,
@@ -52,9 +52,8 @@ class Textbooks extends React.Component {
         }
         var service_id = "default_service";
         var template_id = "item_request";
-        var user_id = 'user_2HoBuxXRZPsL1sOa71XLW';
 
-        emailjs.send(service_id, template_id, template_params, user_id)
+        emailjs.send(service_id, template_id, template_params, process.env.REACT_APP_EMAILJS_USER_ID_SECOND)
         .then(function(response) {
             console.log('Success!');
         }, function(error){
@@ -110,7 +109,7 @@ class Textbooks extends React.Component {
         let title = this.refs.title.value;
         if (title) {
             // Get & Display the Volume's ISBN # and Picture
-            await fetch(`${googleAPI}?q=${title}&key=${GOOGLE_BOOKS_API_KEY}`)
+            await fetch(`${googleAPI}?q=${title}&key=${googleAPIKey}`)
             .then(response => response.json())
             .then(data => this.setState({ bookOptions: data.items }))
             .then(this.setState({gbMsg: "Please select a title below."}));

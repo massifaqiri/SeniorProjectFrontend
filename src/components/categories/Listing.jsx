@@ -1,14 +1,8 @@
 import React, { Fragment } from 'react';
 import { Button, Col, Modal, Row } from 'react-bootstrap';
 import { MDBContainer } from "mdbreact";
-
 import "./styles/Listing.css";
 
-// Listing: Parent Component which Categories can inherit from
-//  props must include:
-//      categoryName    Name of the category page
-//      categoryDesc    Short, one-line description or quote
-//      tableName       Name of the associated table in the Database
 
 class Listing extends React.Component {
 
