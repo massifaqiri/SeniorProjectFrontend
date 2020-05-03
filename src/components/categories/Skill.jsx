@@ -19,7 +19,6 @@ class Skill extends React.Component {
     // componentWillMount 
 
     componentDidMount(){this.fetchSkill();}
-
     deleteItem = async (skill_id) => {
         await fetch(`${global.deleteAPI}table=Skill&condition=skill_id=${skill_id}`, {
                 method: 'GET',
