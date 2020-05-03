@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { Button, Col, Form, InputGroup, Modal, Row, Spinner } from 'react-bootstrap';
 import { MDBPopover, MDBPopoverBody, MDBPopoverHeader, MDBBtn } from "mdbreact";
 import S3FileUpload from 'react-s3';
+import emailjs from 'emailjs-com';
 
 import './styles/Listing.css';
 
@@ -113,7 +114,49 @@ class LostAndFound extends React.Component {
         .catch(err => this.setState({errMsg: err}));
     }
 
-    // sendEmail Placeholder
+    // It sends a request email to the discoverer of the item, stating that the requester has requested it.
+    // This function is invoked upon clicking request on any Lost and Found item.
+    sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
+        var item_specs;
+        let url = `${global.selectAPI}table=LostAndFound&field=item_name,location_found&condition=item_id='${item_id}'`;
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
+        .then(response => response.json())
+        .then((json) => {
+            item_specs = json;
+        })
+        .catch(err => alert(err));
+        item_specs = `${item_specs[0].item_name} found at ${item_specs[0].location_found}`;
+
+        var template_params = {
+            "offerer_email": offerer_emailId,
+            "requester_email": requester_emailId,
+            "item_specs": item_specs
+        }
+        var service_id = "default_service";
+        var template_id = "item_request";
+
+        emailjs.send(service_id, template_id, template_params, process.env.REACT_APP_EMAILJS_USER_ID_SECOND)
+        .then(function(response) {
+            console.log('Success!');
+        }, function(error){
+            console.log(error);
+        });
+        
+        url = `${global.insertAPI}table=Notifications&field=requester_email,offerer_email,item_specs,item_id,item_table,offerer_status,requester_status&value='${requester_emailId}','${offerer_emailId}','${item_specs}', '${item_id}','LostAndFound', 'pending', 'pending'`;
+        await fetch(url, {
+            method: 'GET',
+            headers: {
+                'x-api-key': process.env.REACT_APP_API_KEY,
+            }      
+        })
+        .then(response => console.log(response))
+        alert('Request Successfully sent!');
+    }
 
     // Render Component
     render() {
@@ -177,7 +220,7 @@ class LostAndFound extends React.Component {
                                                         </Fragment>
                                                         : <Fragment>
                                                             <p className="p" ref="owner">{item.discoverer}</p>
-                                                            <Button variant="success" size="sm" onClick={() => this.sendEmail(global.customAuth.email, item.owner, item.item_id)}>Request</Button>
+                                                            <Button variant="success" size="sm" onClick={() => this.sendEmail(global.customAuth.email, item.discoverer, item.item_id)}>Request</Button>
                                                         </Fragment>
                                                         }
                                                     </Fragment>

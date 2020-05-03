@@ -50,14 +50,17 @@ class Landing extends React.Component {
     // It handles the 'Done' button click by updating the database and deleting the item if the user is 
     // the offerer.
     doneDeal = (offererEmail, itemId, itemTable, notificationId) => {
+        var itemIdName;
         if (itemTable === 'Textbooks') {
-            var itemIdName = 'book_id';
+            itemIdName = 'book_id';
         } else if (itemTable === 'Misc') {
-            var itemIdName = 'item_id';
+            itemIdName = 'item_id';
         } else if (itemTable === 'Skill') {
-            var itemIdName = 'skill_id';
+            itemIdName = 'skill_id';
         } else if (itemTable === 'Transport') {
-            var itemIdName = 'car_id';
+            itemIdName = 'car_id';
+        } else if (itemTable === 'LostAndFound') {
+            itemIdName = 'item_id';
         }
 
         // Since the user is the owner, by clicking Done, the item is deleted, and 
