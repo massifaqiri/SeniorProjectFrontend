@@ -83,7 +83,6 @@ class Skill extends React.Component {
                 .then(response => console.log(response))
                 .catch(err => console.log(err));
     }
-
     // It sends a request email to the offerer of the item, stating that the requester has requested it.
     // This function is invoked upon clicking request on any Skill item.
     sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
