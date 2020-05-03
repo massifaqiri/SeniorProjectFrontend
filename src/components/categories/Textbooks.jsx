@@ -17,7 +17,7 @@ const config = {
 };
 
 const googleAPI = "https://www.googleapis.com/books/v1/volumes";
-const googleAPIKey = 'AIzaSyB5xY_lIKmpdwTI50kPz-UYiBDmyiSoc5M'
+const googleAPIKey = process.env.REACT_APP_GOOGLE_BOOKS_API_KEY
 
 // Add objects parameter; list of lists (info for InfoCards)
 class Textbooks extends React.Component {
