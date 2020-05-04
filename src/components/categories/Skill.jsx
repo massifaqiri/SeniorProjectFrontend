@@ -19,7 +19,6 @@ class Skill extends React.Component {
     // componentWillMount 
 
     componentDidMount(){this.fetchSkill();}
-
     deleteItem = async (skill_id) => {
         await fetch(`${global.deleteAPI}table=Skill&condition=skill_id=${skill_id}`, {
                 method: 'GET',
@@ -32,7 +31,7 @@ class Skill extends React.Component {
         this.fetchSkill();
     };
 
-    // fetchSkill: retrieves current listings from Transport table
+    // fetchSkill: retrieves current listings from Skills table
     fetchSkill = async () => {
         await fetch(`${global.selectAPI}table=Skill&field=*`, {
             method: 'GET',
@@ -47,6 +46,7 @@ class Skill extends React.Component {
     handleModalClose = () => {this.setState({showModal: false, file: null})};
     handleModalShow = () => {this.setState({showModal: true})};
 
+    // Sends book info from Add Listing Modal to DB & refreshes the component
     handleSubmit = async () => {
         let skill_title = this.refs.skill_title.value;
         let skill_description = this.refs.skill_description.value;
@@ -82,7 +82,6 @@ class Skill extends React.Component {
                 .then(response => console.log(response))
                 .catch(err => console.log(err));
     }
-
     // It sends a request email to the offerer of the item, stating that the requester has requested it.
     // This function is invoked upon clicking request on any Skill item.
     sendEmail = async(requester_emailId, offerer_emailId, item_id) => {
