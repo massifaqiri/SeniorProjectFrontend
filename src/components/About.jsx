@@ -10,7 +10,7 @@ class About extends React.Component {
                 <div className="clearfix">
                     <div className="aboutUs">
                         <img className="img_25" src={require("./images/CandidCheetahs.png")} alt="Candid Cheetah Meeting"/>
-                        <p className="caption"><i>Creators: Massi Faquiri, Kari Hoff, and Sam Sixta</i></p>
+                        <p className="caption"><i>Creators: Massi Faqiri, Kari Hoff, and Sam Sixta</i></p>
                     </div>
                     <h1 className="title">About Us</h1>
                     <p><i>CampusShare</i> is the product of a year-long senior project between three computer science students at Luther College.
