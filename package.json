@@ -6,7 +6,7 @@
     "bcryptjs": "^2.4.3",
     "bootstrap": "^4.3.1",
     "build": "^0.1.4",
-    "chromedriver": "^80.0.1",
+    "chromedriver": "^119.0.1",
     "defaults": "^1.0.3",
     "dotenv": "^8.2.0",
     "emailjs-com": "^2.4.1",
